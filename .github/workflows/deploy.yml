@@ -56,6 +56,6 @@ jobs:
             EOF
             chown ${{ secrets.DROPLET_USER }}:$${{ secrets.DROPLET_USER }} /home/${{ secrets.DROPLET_USER }}/safestore/.env || true
             chmod 600 /home/${{ secrets.DROPLET_USER }}/safestore/.env || true
-            docker pull ghcr.io/${{ github.repository_owner }}/safestore-frontend:latest
+            docker pull ghcr.io/${{ github.repository_owner }}/2025_proyecto2_front_safestore:latest
             docker compose -f /home/${{ secrets.DROPLET_USER }}/safestore/docker-compose.prod.yml pull
             docker compose -f /home/${{ secrets.DROPLET_USER }}/safestore/docker-compose.prod.yml up -d
