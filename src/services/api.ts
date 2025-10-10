@@ -1,5 +1,5 @@
 export async function getHello(): Promise<{ message: string }> {
-    const base = 'https://104.236.125.252:3000';
+    const base = 'http://104.236.125.252:3000';
     const res = await fetch(`${base}/`, {
         cache: 'no-store',
         headers: { 'Cache-Control': 'no-cache' },
