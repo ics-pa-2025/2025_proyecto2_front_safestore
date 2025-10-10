@@ -30,6 +30,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ghcr.io/ics-pa-2025/2025_proyecto2_front_safestore:latest
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
 
   deploy:
     needs: build-and-push
