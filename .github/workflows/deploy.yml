@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Wait for image propagation
         run: sleep 10
-  
+
       - name: Deploy to Droplet via SSH
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -49,10 +49,6 @@ jobs:
           script: |
             set -e
             mkdir -p /home/${{ secrets.DROPLET_USER }}/safestore
-            
-            # Copiar docker-compose.prod.yml al droplet
-            cp ./docker-compose.prod.yml /home/${{ secrets.DROPLET_USER }}/safestore/docker-compose.prod.yml
-  
             cat > /home/${{ secrets.DROPLET_USER }}/safestore/.env <<EOF
             VITE_API_URL=${{ secrets.VITE_API_URL }}
             PORT=${{ secrets.PORT }}
