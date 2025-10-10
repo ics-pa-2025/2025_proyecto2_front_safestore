@@ -1,8 +1,10 @@
 export default function Nav() {
     return (
-        <nav>
-            <a href="/">Home</a>
-            {/* Removed the Private link */}
+        <nav className="nav">
+            <a className="nav-link" href="/">Home</a>
+            <a className="nav-link" href="/dashboard">Dashboard</a>
+            <a className="nav-link" href="/products">Products</a>
+            <a className="nav-link" href="/profile">Profile</a>
         </nav>
     );
 }

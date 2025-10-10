@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { getHello } from '../services/api';
 import Header from '../components/layout/Header';
 import Nav from '../components/layout/Nav';
 import Footer from '../components/layout/Footer';
@@ -9,19 +8,20 @@ export default function MainLayout({
 }: {
     children?: React.ReactNode;
 }) {
-    const [hello, setHello] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    const user = localStorage.getItem("user")
+    const isRegistered = !!user
+
 
     useEffect(() => {
         let cancelled = false;
         (async () => {
             try {
                 setLoading(true);
-                const data = await getHello();
-                if (!cancelled) setHello(data.message);
             } catch (e) {
-                if (!cancelled) setError('Error al conectar con backend');
+                if (!cancelled) setError('Error loading user data');
             } finally {
                 if (!cancelled) setLoading(false);
             }
@@ -34,13 +34,15 @@ export default function MainLayout({
     return (
         <div id="root">
             <Header />
-            <Nav />
+
+            {isRegistered && <Nav />}
+
             <main>
-                {loading && <p>Cargando...</p>}
+                {loading && <p>Loading...</p>}
                 {error && <p style={{ color: 'red' }}>{error}</p>}
-                {hello && <p>{hello}</p>}
                 {children}
             </main>
+
             <Footer />
         </div>
     );
