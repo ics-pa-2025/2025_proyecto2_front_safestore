@@ -4,7 +4,11 @@ import Header from '../components/layout/Header';
 import Nav from '../components/layout/Nav';
 import Footer from '../components/layout/Footer';
 
-export default function MainLayout({ children }: { children?: React.ReactNode }) {
+export default function MainLayout({
+    children,
+}: {
+    children?: React.ReactNode;
+}) {
     const [hello, setHello] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -22,7 +26,9 @@ export default function MainLayout({ children }: { children?: React.ReactNode })
                 if (!cancelled) setLoading(false);
             }
         })();
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     return (

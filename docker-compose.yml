@@ -1,22 +1,22 @@
 services:
-  frontend:
-    image: node:20
-    container_name: safestore-frontend
-    working_dir: /app
-    env_file:
-      - .env
-    ports:
-      - "5173:5173"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
-    environment:
-      VITE_API_URL: ${VITE_API_URL}
-    networks:
-      - microservices
+    frontend:
+        image: node:20
+        container_name: safestore-frontend
+        working_dir: /app
+        env_file:
+            - .env
+        ports:
+            - '5173:5173'
+        volumes:
+            - .:/app
+            - /app/node_modules
+        command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+        environment:
+            VITE_API_URL: ${VITE_API_URL}
+        networks:
+            - microservices
 
 networks:
-  microservices:
-    name: shared-microservices
-    external: false
+    microservices:
+        name: shared-microservices
+        external: false
