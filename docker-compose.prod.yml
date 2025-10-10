@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: ghcr.io/${GITHUB_OWNER:-ICS-PA-2025}/safestore-frontend:latest
+    container_name: safestore-frontend
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:3000}
