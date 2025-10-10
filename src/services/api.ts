@@ -1,5 +1,5 @@
 export async function getHello(): Promise<{ message: string }> {
-    const base = 'http://safestore-backend:3000';
+    const base = import.meta.env.VITE_API_URL;
     const res = await fetch(`${base}/`, {
         cache: 'no-store',
         headers: { 'Cache-Control': 'no-cache' },
