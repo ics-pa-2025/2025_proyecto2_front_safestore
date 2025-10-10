@@ -2,22 +2,28 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# Install dependencies
+# Instalar dependencias
 COPY package*.json ./
 RUN npm ci --silent
 
-# Copy sources
+# Copiar el código fuente y el .env
 COPY . .
+# Copiar .env y exportarlo para que Vite lo use
+# Esto permite que VITE_API_URL y otras variables sean tomadas del archivo
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+COPY .env .env
 
-# Accept VITE_API_URL as build arg and expose as env so Vite picks it up at build time
-ARG VITE_API_URL
-ENV VITE_API_URL=${VITE_API_URL}
+# Cargar variables del .env y construir
+RUN export $(grep -v '^#' .env | xargs) && npm run build
 
-# Build
-RUN npm run build
-
-## Production image
+## Imagen de producción
 FROM nginx:stable-alpine AS production
 COPY --from=build /app/dist /usr/share/nginx/html
+
+# Para soporte de runtime env (opcional)
+COPY nginx-entrypoint.sh /docker-entrypoint.d/entrypoint.sh
+RUN chmod +x /docker-entrypoint.d/entrypoint.sh
+
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
