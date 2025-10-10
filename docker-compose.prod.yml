@@ -9,3 +9,10 @@ services:
       - '80:80'
     env_file:
       - .env
+    networks:
+      - microservices
+
+networks:
+  microservices:
+    name: safestore-microservices
+    external: false
