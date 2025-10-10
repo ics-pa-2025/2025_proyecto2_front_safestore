@@ -1,6 +1,9 @@
+import { getApiUrl } from './environment';
+
 export async function getHello(): Promise<{ message: string }> {
-    const base = 'http://104.236.125.252:3000';
-    const res = await fetch(`${base}/`, {
+    const apiUrl = getApiUrl();
+    console.log('Using API URL:', apiUrl);
+    const res = await fetch(`${apiUrl}/`, {
         cache: 'no-store',
         headers: { 'Cache-Control': 'no-cache' },
     });
