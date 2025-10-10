@@ -11,7 +11,7 @@ COPY . .
 
 # Accept VITE_API_URL as build arg and expose as env so Vite picks it up at build time
 ARG VITE_API_URL
-ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_API_URL=$VITE_API_URL
 
 # Build
 RUN npm run build
