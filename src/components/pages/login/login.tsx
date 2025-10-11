@@ -4,6 +4,8 @@ import type React from "react"
 import { useState } from "react"
 import "./login.css"
 import { useNavigate } from "react-router-dom"
+import { authService } from '../../../services/auth.service.ts';
+
 
 export function Login() {
     const [formData, setFormData] = useState({
@@ -14,9 +16,13 @@ export function Login() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        localStorage.setItem("user", JSON.stringify({ email: formData.email, name: "John Doe" }))
-        navigate("/");
-        console.log("Form submitted:", formData)
+        try {
+            authService.login(formData.email, formData.password).then(() => {
+                navigate("/");
+            })
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
