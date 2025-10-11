@@ -3,8 +3,11 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import "./register.css"
+import { authService } from '../../../services/auth.service.ts';
+import { useNavigate } from 'react-router-dom';
 
 export function Register() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -19,12 +22,13 @@ export function Register() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
 
-        if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match")
-            return
+        try {
+            authService.register(formData.email, formData.password).then(() => {
+                navigate("/");
+            })
+        } catch (error) {
+            console.log(error)
         }
-localStorage.setItem("user", JSON.stringify(formData))
-        console.log("Form submitted:", formData)
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,21 +47,6 @@ localStorage.setItem("user", JSON.stringify(formData))
                 </div>
 
                 <form onSubmit={handleSubmit} className="register-form">
-                    <div className="form-group">
-                        <label htmlFor="name" className="form-label">
-                            Full Name
-                        </label>
-                        <input
-                            id="name"
-                            name="name"
-                            type="text"
-                            placeholder="John Doe"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            className="form-input"
-                        />
-                    </div>
 
                     <div className="form-group">
                         <label htmlFor="email" className="form-label">
