@@ -4,7 +4,7 @@ import "./layout.css";
 
 import { Outlet } from "react-router-dom";
 import Header from './Header.tsx';
-import Nav from './Nav.tsx';
+import Sidebar from './Sidebar.tsx';
 import Footer from './Footer.tsx';
 
 const MainLayout: React.FC = () => {
@@ -12,7 +12,7 @@ const MainLayout: React.FC = () => {
         <div className="flex flex-col min-h-screen">
             <Header />
 
-            <Nav />
+            <Sidebar />
 
             <main className="flex-grow">
                 <Outlet />

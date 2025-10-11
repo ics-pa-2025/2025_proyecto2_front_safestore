@@ -39,9 +39,9 @@
     color: #888;
 }
 
-/* nav styles */
+/* sidebar styles */
 
-.nav {
+.sidebar {
     position: fixed;
     top: 112px; 
     left: 0;
@@ -53,7 +53,7 @@
     box-sizing: border-box;
 }
 
-.nav-link {
+.sidebar-link {
     display: block;
     margin-bottom: 1rem;
     color: #a5a5a5;
