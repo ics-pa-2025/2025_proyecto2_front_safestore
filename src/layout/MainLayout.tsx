@@ -9,16 +9,19 @@ import Footer from './Footer.tsx';
 
 const MainLayout: React.FC = () => {
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="min-h-screen bg-gray-50/30">
             <Header />
 
-            <Sidebar />
-
-            <main className="flex-grow">
-                <Outlet />
-            </main>
-
-            <Footer />
+            <div className="flex">
+                <Sidebar />
+                
+                <main className="flex-1 ml-64 pt-16 pb-4 min-h-screen flex flex-col">
+                    <div className="flex-grow p-6">
+                        <Outlet />
+                    </div>
+                    <Footer />
+                </main>
+            </div>
         </div>
     );
 };
