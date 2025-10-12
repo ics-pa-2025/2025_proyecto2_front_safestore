@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import {
+    BrowserRouter as Router,
+    Navigate,
+    Route,
+    Routes,
+} from 'react-router-dom';
 import './App.css';
 import { Register } from './components/pages/Register/register';
 import MainLayout from './layout/MainLayout.tsx';
@@ -10,6 +15,7 @@ import { Product } from './components/pages/products/product.tsx';
 import { Home } from './components/pages/home/home.tsx';
 // Importar para debugging automático
 import './services/api.ts';
+import { Brands } from './components/pages/brands/brands.tsx';
 
 function App() {
     return (
@@ -31,6 +37,7 @@ function App() {
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="products" element={<Product />} />
                     <Route path="profile" element={<Profile />} />
+                    <Route path="brands" element={<Brands />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace />} />
