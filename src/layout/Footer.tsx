@@ -1,8 +1,12 @@
+import { footerStyles } from './classes';
+
 export default function Footer() {
     return (
-        <footer className="footer">
-            <div className="footer-content">
-                <small>© {new Date().getFullYear()} SafeStore</small>
+        <footer className={footerStyles.footerClass}>
+            <div className={footerStyles.containerClass}>
+                <p className={footerStyles.textClass}>
+                    © {new Date().getFullYear()} SafeStore. All rights reserved.
+                </p>
             </div>
         </footer>
     );

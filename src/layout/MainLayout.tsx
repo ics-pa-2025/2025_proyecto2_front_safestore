@@ -4,20 +4,25 @@ import "./layout.css";
 
 import { Outlet } from "react-router-dom";
 import Header from './Header.tsx';
-import Nav from './Nav.tsx';
+import Sidebar from './Sidebar.tsx';
 import Footer from './Footer.tsx';
+import { mainLayoutStyles } from './classes.tsx';
 
 const MainLayout: React.FC = () => {
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className={mainLayoutStyles.containerClass}>
             <Header />
 
-            <Nav />
-
-            <main className="flex-grow">
-                <Outlet />
-            </main>
-
+            <div className={mainLayoutStyles.flexClass}>
+                <Sidebar />
+                
+                <main className={mainLayoutStyles.mainClass}>
+                    <div className={mainLayoutStyles.contentClass}>
+                        <Outlet />
+                    </div>
+                </main>
+            </div>
+            
             <Footer />
         </div>
     );
