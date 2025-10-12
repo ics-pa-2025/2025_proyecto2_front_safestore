@@ -39,6 +39,15 @@ class BrandsService {
             throw new Error('Error al actualizar el perfil');
         }
     }
+
+    async delete(id: number): Promise<void> {
+        try {
+            await backApi.delete(`brands/${id}`);
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error al eliminar el perfil');
+        }
+    }
 }
 
 export const brandsService = new BrandsService();

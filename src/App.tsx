@@ -16,6 +16,7 @@ import { Home } from './components/pages/home/home.tsx';
 // Importar para debugging automático
 import './services/api.ts';
 import { Brands } from './components/pages/brands/brands.tsx';
+import { BrandsForm } from './components/pages/brands/brands-form.tsx';
 
 function App() {
     return (
@@ -38,6 +39,7 @@ function App() {
                     <Route path="products" element={<Product />} />
                     <Route path="profile" element={<Profile />} />
                     <Route path="brands" element={<Brands />} />
+                    <Route path="brands-form" element={<BrandsForm />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace />} />
