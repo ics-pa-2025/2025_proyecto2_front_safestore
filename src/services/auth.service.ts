@@ -77,9 +77,13 @@ class AuthService {
         }
     }
 
-    async register(email: string, password: string): Promise<AuthResponse> {
+    async register(
+        email: string,
+        password: string,
+        fullname: string
+    ): Promise<AuthResponse> {
         try {
-            const payload = { email, password };
+            const payload = { email, password, fullname };
             const response: AxiosResponse<AuthResponse> = await authApi.post(
                 '/register',
                 payload
