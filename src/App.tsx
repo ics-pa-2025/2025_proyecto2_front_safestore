@@ -8,6 +8,8 @@ import { Dashboard } from './components/pages/dashboard/dashboard.tsx';
 import { Profile } from './components/pages/profile/profile.tsx';
 import { Product } from './components/pages/products/product.tsx';
 import { Home } from './components/pages/home/home.tsx';
+// Importar para debugging automático
+import './services/api.ts';
 
 function App() {
     return (
