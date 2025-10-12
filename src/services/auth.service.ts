@@ -1,7 +1,7 @@
-import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import type {ApiErrorDto} from "../dto/api-error.dto.ts";
-import type {AuthResponse} from "../dto/auth/auth-response.dto.ts";
+import axios from 'axios';
+import type { ApiErrorDto } from '../dto/api-error.dto.ts';
+import type { AuthResponse } from '../dto/auth/auth-response.dto.ts';
 import { getApiUrl } from './environment';
 
 // Función para obtener URL del microservicio de auth
@@ -16,7 +16,7 @@ function getAuthApiUrl(): string {
 }
 
 const authApi = axios.create({
-    baseURL: getAuthApiUrl() + "/auth",
+    baseURL: getAuthApiUrl() + '/auth',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
@@ -40,14 +40,21 @@ authApi.interceptors.response.use(
 class AuthService {
     async login(email: string, password: string): Promise<AuthResponse> {
         try {
-            const payload = {email, password};
-            const response: AxiosResponse<AuthResponse> = await authApi.post('/login', payload);
+            const payload = { email, password };
+            const response: AxiosResponse<AuthResponse> = await authApi.post(
+                '/login',
+                payload
+            );
 
             const data = response.data || {};
             // Accept both accessToken or token fields
             const token = data.accessToken || data.token;
             if (token) {
                 this.setToken(token);
+            }
+
+            if (data.user) {
+                localStorage.setItem('user', JSON.stringify(data.user));
             }
 
             return data;
@@ -58,7 +65,9 @@ class AuthService {
                     throw new Error(apiError.message || 'Login failed');
                 }
                 if (error.code === 'ECONNREFUSED') {
-                    throw new Error('Cannot connect to server. Verify backend is running.');
+                    throw new Error(
+                        'Cannot connect to server. Verify backend is running.'
+                    );
                 }
                 if (error.code === 'ECONNABORTED') {
                     throw new Error('Request timed out. Try again.');
@@ -70,14 +79,21 @@ class AuthService {
 
     async register(email: string, password: string): Promise<AuthResponse> {
         try {
-            const payload = {email, password};
-            const response: AxiosResponse<AuthResponse> = await authApi.post('/register', payload);
+            const payload = { email, password };
+            const response: AxiosResponse<AuthResponse> = await authApi.post(
+                '/register',
+                payload
+            );
 
             const data = response.data || {};
             // Accept both accessToken or token fields
             const token = data.accessToken || data.token;
             if (token) {
                 this.setToken(token);
+            }
+
+            if (data.user) {
+                localStorage.setItem('user', JSON.stringify(data.user));
             }
 
             return data;
@@ -92,7 +108,9 @@ class AuthService {
                     throw new Error(apiError.message || 'Register failed');
                 }
                 if (error.code === 'ECONNREFUSED') {
-                    throw new Error('Cannot connect to server. Verify backend is running.');
+                    throw new Error(
+                        'Cannot connect to server. Verify backend is running.'
+                    );
                 }
                 if (error.code === 'ECONNABORTED') {
                     throw new Error('Request timed out. Try again.');
@@ -104,6 +122,7 @@ class AuthService {
 
     logout() {
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         delete authApi.defaults.headers.common['Authorization'];
     }
 
