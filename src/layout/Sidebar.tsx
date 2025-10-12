@@ -6,6 +6,7 @@ import {
     User, 
     LogOut 
 } from 'lucide-react';
+import { sidebarStyles } from './classes.tsx';
 
 export default function Sidebar() {
     const handleLogout = () => {
@@ -14,48 +15,48 @@ export default function Sidebar() {
     };
     
     return (
-        <aside className="fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 shadow-sm overflow-y-auto transition-transform duration-300 ease-in-out lg:translate-x-0 z-40 flex flex-col">
-            <nav className="flex-1 p-4 space-y-2">
-                <div className="space-y-1">
+        <aside className={sidebarStyles.containerClass}>
+            <nav className={sidebarStyles.navClass}>
+                <div className={sidebarStyles.linksClass}>
                     <a 
-                        className="flex items-center px-3 py-2.5 text-sm font-medium text-primary-500 rounded-lg hover:bg-white hover:text-primary-600 hover:shadow-sm transition-all duration-200" 
+                        className={sidebarStyles.linkClass} 
                         href="/home"
                     >
-                        <Home className="w-5 h-5 mr-3 text-primary-600" />
+                        <Home className={sidebarStyles.iconClass} />
                         Home
                     </a>
                     <a 
-                        className="flex items-center px-3 py-2.5 text-sm font-medium text-primary-500 rounded-lg hover:bg-white hover:text-primary-600 hover:shadow-sm transition-all duration-200" 
+                        className={sidebarStyles.linkClass} 
                         href="/dashboard"
                     >
-                        <BarChart3 className="w-5 h-5 mr-3 text-primary-600" />
+                        <BarChart3 className={sidebarStyles.iconClass} />
                         Dashboard
                     </a>
                     <a 
-                        className="flex items-center px-3 py-2.5 text-sm font-medium text-primary-500 rounded-lg hover:bg-white hover:text-primary-600 hover:shadow-sm transition-all duration-200" 
+                        className={sidebarStyles.linkClass} 
                         href="/products"
                     >
-                        <Package className="w-5 h-5 mr-3 text-primary-600" />
+                        <Package className={sidebarStyles.iconClass} />
                         Products
                     </a>
                     <a 
-                        className="flex items-center px-3 py-2.5 text-sm font-medium text-primary-500 rounded-lg hover:bg-white hover:text-primary-600 hover:shadow-sm transition-all duration-200" 
+                        className={sidebarStyles.linkClass} 
                         href="/profile"
                     >
-                        <User className="w-5 h-5 mr-3 text-primary-600" />
+                        <User className={sidebarStyles.iconClass} />
                         Profile
                     </a>
                 </div>
             </nav>
             
             {/* Logout button always at bottom */}
-            <div className="p-4 border-t border-gray-200">
+            <div className={sidebarStyles.logoutContainerClass}>
                 <button
                     onClick={handleLogout}
                     type="button"
-                    className="flex items-center w-full px-3 py-2.5 text-sm font-medium text-red-600 rounded-lg hover:bg-white hover:text-red-700 hover:shadow-sm transition-all duration-200"
+                    className={sidebarStyles.logoutBtnClass}
                 >
-                    <LogOut className="w-5 h-5 mr-3" />
+                    <LogOut className={sidebarStyles.iconClass} />
                     Logout
                 </button>
             </div>

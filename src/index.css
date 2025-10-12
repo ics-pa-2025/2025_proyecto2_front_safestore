@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./layout/layout.css";
 
 :root {
     box-sizing: border-box;
@@ -11,6 +12,7 @@ a {
     font-weight: 500;
     color: #646cff;
     text-decoration: inherit;
+
 }
 
 a:hover {
