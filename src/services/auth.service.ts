@@ -1,13 +1,35 @@
 import type { AxiosResponse } from 'axios';
 import axios from 'axios';
-import type { ApiErrorDto } from '../dto/api-error.dto';
-import type { AuthResponse } from '../dto/auth/auth-response.dto';
-import { authApi } from '../api/authApi';
 import {
     getFromLocalStorage,
     removeFromLocalStorage,
     saveToLocalStorage,
 } from '../helpers/localStorage.helper';
+import type {ApiErrorDto} from "../dto/api-error.dto.ts";
+import type {AuthResponse} from "../dto/auth/auth-response.dto.ts";
+import { getAuthApiUrl } from './environment';
+
+const authApi = axios.create({
+    baseURL: getAuthApiUrl() + "/auth",
+    timeout: 10000,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+// Attach token from localStorage on start (if exists)
+const initialToken = localStorage.getItem('token');
+if (initialToken) {
+    authApi.defaults.headers.common['Authorization'] = `Bearer ${initialToken}`;
+}
+
+authApi.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        console.error('Auth API error:', error);
+        return Promise.reject(error);
+    }
+);
 
 class AuthService {
     async login(email: string, password: string): Promise<AuthResponse> {

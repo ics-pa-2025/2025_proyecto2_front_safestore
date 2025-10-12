@@ -52,14 +52,11 @@ jobs:
           script: |
             set -e
             mkdir -p /home/${{ secrets.DROPLET_USER }}/2025_proyecto2_front_safestore
-            cat > /home/${{ secrets.DROPLET_USER }}/2025_proyecto2_front_safestore/.env <<EOF
-            VITE_API_URL=${{ secrets.VITE_API_URL }}
-            VITE_AUTH_API_URL=${{ secrets.VITE_AUTH_API_URL }}
-            PORT=${{ secrets.PORT }}
-            NODE_ENV=production
-            EOF
-            chown ${{ secrets.DROPLET_USER }}:$${{ secrets.DROPLET_USER }} /home/${{ secrets.DROPLET_USER }}/2025_proyecto2_front_safestore/.env || true
-            chmod 600 /home/${{ secrets.DROPLET_USER }}/2025_proyecto2_front_safestore/.env || true
+            cd /home/${{ secrets.DROPLET_USER }}/2025_proyecto2_front_safestore
+            # Download the docker-compose.prod.yml if it doesn't exist
+            if [ ! -f docker-compose.prod.yml ]; then
+              curl -o docker-compose.prod.yml https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.prod.yml
+            fi
             docker pull ghcr.io/${{ github.repository_owner }}/2025_proyecto2_front_safestore:latest
-            docker compose -f /home/${{ secrets.DROPLET_USER }}/2025_proyecto2_front_safestore/docker-compose.prod.yml pull
-            docker compose -f /home/${{ secrets.DROPLET_USER }}/2025_proyecto2_front_safestore/docker-compose.prod.yml up -d
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d

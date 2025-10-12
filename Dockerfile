@@ -9,14 +9,15 @@ RUN npm ci --silent
 # Copy sources
 COPY . .
 
-# Accept VITE_API_URL as build arg so the prebuild script can pick it up
+# Build args for environment variables
 ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
-
 ARG VITE_AUTH_API_URL
+
+# Set environment variables for build
+ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_AUTH_API_URL=$VITE_AUTH_API_URL
 
-# npm's prebuild script (if present) will run automatically before build
+# Build the application
 RUN npm run build
 
 ## Production image
