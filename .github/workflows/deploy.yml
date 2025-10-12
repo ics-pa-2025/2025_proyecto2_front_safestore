@@ -54,7 +54,7 @@ jobs:
             mkdir -p /home/${{ secrets.DROPLET_USER }}/2025_proyecto2_front_safestore
             cat > /home/${{ secrets.DROPLET_USER }}/2025_proyecto2_front_safestore/.env <<EOF
             VITE_API_URL=${{ secrets.VITE_API_URL }}
-            VITE_API_URL=${{ secrets.VITE_API_URL }}
+            VITE_AUTH_API_URL=${{ secrets.VITE_AUTH_API_URL }}
             PORT=${{ secrets.PORT }}
             NODE_ENV=production
             EOF
