@@ -14,8 +14,8 @@ export default function Sidebar() {
     };
     
     return (
-        <aside className="fixed top-16 left-0 w-64 h-[calc(100vh-8rem)] bg-gray-50/80 backdrop-blur-sm border-r border-gray-100 overflow-y-auto transition-transform duration-300 ease-in-out lg:translate-x-0 z-40">
-            <nav className="p-4 space-y-2">
+        <aside className="fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 shadow-sm overflow-y-auto transition-transform duration-300 ease-in-out lg:translate-x-0 z-40 flex flex-col">
+            <nav className="flex-1 p-4 space-y-2">
                 <div className="space-y-1">
                     <a 
                         className="flex items-center px-3 py-2.5 text-sm font-medium text-primary-500 rounded-lg hover:bg-white hover:text-primary-600 hover:shadow-sm transition-all duration-200" 
@@ -46,18 +46,19 @@ export default function Sidebar() {
                         Profile
                     </a>
                 </div>
-                
-                <div className="pt-4 mt-6 border-t border-gray-200">
-                    <button
-                        onClick={handleLogout}
-                        type="button"
-                        className="flex items-center w-full px-3 py-2.5 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 transition-all duration-200"
-                    >
-                        <LogOut className="w-5 h-5 mr-3" />
-                        Logout
-                    </button>
-                </div>
             </nav>
+            
+            {/* Logout button always at bottom */}
+            <div className="p-4 border-t border-gray-200">
+                <button
+                    onClick={handleLogout}
+                    type="button"
+                    className="flex items-center w-full px-3 py-2.5 text-sm font-medium text-red-600 rounded-lg hover:bg-white hover:text-red-700 hover:shadow-sm transition-all duration-200"
+                >
+                    <LogOut className="w-5 h-5 mr-3" />
+                    Logout
+                </button>
+            </div>
         </aside>
     );
 }

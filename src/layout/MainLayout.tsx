@@ -15,13 +15,14 @@ const MainLayout: React.FC = () => {
             <div className="flex">
                 <Sidebar />
                 
-                <main className="flex-1 ml-64 pt-16 pb-4 min-h-screen flex flex-col">
-                    <div className="flex-grow p-6">
+                <main className="flex-1 ml-64 pt-16 pb-20 min-h-screen">
+                    <div className="p-6">
                         <Outlet />
                     </div>
-                    <Footer />
                 </main>
             </div>
+            
+            <Footer />
         </div>
     );
 };
