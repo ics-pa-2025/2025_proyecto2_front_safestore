@@ -2,18 +2,7 @@ import axios from 'axios';
 import type { AxiosResponse } from 'axios';
 import type {ApiErrorDto} from "../dto/api-error.dto.ts";
 import type {AuthResponse} from "../dto/auth/auth-response.dto.ts";
-import { getApiUrl } from './environment';
-
-// Función para obtener URL del microservicio de auth
-function getAuthApiUrl(): string {
-    // runtime config (injected as env.js)
-    const fromWindow = (window as any).__ENV?.VITE_AUTH_API_URL;
-    const fromBuild = (import.meta as any).env?.VITE_AUTH_API_URL;
-    // Fallback: usar misma URL que el backend core pero cambiar puerto
-    const coreUrl = getApiUrl();
-    const authFallback = coreUrl.replace(':3000', ':3001');
-    return fromWindow || fromBuild || authFallback;
-}
+import { getAuthApiUrl } from './environment';
 
 const authApi = axios.create({
     baseURL: getAuthApiUrl() + "/auth",
