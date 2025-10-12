@@ -12,7 +12,7 @@ function getAuthApiUrl(): string {
 }
 
 export const authApi = axios.create({
-    baseURL: getAuthApiUrl() + '/user',
+    baseURL: getAuthApiUrl(),
     timeout: 10000,
     headers: { 'Content-Type': 'application/json' },
 });

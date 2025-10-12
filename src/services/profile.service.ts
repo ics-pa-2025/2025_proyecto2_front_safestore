@@ -14,7 +14,7 @@ class ProfileService {
     ): Promise<ResponseUserDto> {
         try {
             const response: AxiosResponse<ResponseUserDto> =
-                await authApi.patch(`/${id}`, userUpdate);
+                await authApi.patch(`user/${id}`, userUpdate);
             const user = response.data;
 
             if (user) this.setUser(user);
