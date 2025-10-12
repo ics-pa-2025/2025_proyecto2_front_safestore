@@ -13,6 +13,9 @@ COPY . .
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
+ARG VITE_AUTH_API_URL
+ENV VITE_AUTH_API_URL=$VITE_AUTH_API_URL
+
 # npm's prebuild script (if present) will run automatically before build
 RUN npm run build
 
