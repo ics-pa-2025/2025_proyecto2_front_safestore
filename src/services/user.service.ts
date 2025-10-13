@@ -13,6 +13,16 @@ class UserService {
             throw new Error('Error al obtener los productos');
         }
     }
+
+    async delete(id:string){
+        try {
+            await authApi.delete(`user/${id}`);
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error al eliminar el usuario');
+        }
+    }
+
 }
 
 export const userService = new UserService();

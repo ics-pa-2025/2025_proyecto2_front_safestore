@@ -65,10 +65,9 @@ export function Users() {
     // };
 
     const handleDelete = async (id: string) => {
-        console.log(id);
         if (window.confirm('¿Estás seguro de eliminar este producto?')) {
             try {
-                // await productService.delete(id);
+                await userService.delete(id);
                 loadUsers();
             } catch (error) {
                 console.error('Error eliminando producto:', error);
