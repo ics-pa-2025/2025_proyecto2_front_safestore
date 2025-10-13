@@ -1,12 +1,10 @@
 import type { AxiosResponse } from 'axios';
 import { authApi } from '../api/authApi.ts';
-import type { ResponseUserDto } from '../dto/user/response-user.dto.ts';
 
-class UserService {
-    async get(): Promise<ResponseUserDto[]> {
+class RolesService {
+    async get(): Promise<any[]> {
         try {
-            const response: AxiosResponse<ResponseUserDto[]> =
-                await authApi.get('user');
+            const response: AxiosResponse<any[]> = await authApi.get('roles');
             return response.data;
         } catch (error) {
             console.log(error);
@@ -15,4 +13,4 @@ class UserService {
     }
 }
 
-export const userService = new UserService();
+export const rolesService = new RolesService();

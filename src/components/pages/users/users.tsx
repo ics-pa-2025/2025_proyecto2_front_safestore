@@ -4,15 +4,18 @@ import React, { useEffect, useState } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
 import type { ResponseUserDto } from '../../../dto/user/response-user.dto.ts';
 import { userService } from '../../../services/user.service.ts';
+import { rolesService } from '../../../services/role.service.ts';
 
 export function Users() {
     const [users, setUsers] = useState<ResponseUserDto[]>([]);
+    const [roles, setRoles] = useState<any[]>([]);
     // const [isModalOpen, setIsModalOpen] = useState(false);
     // const [productToEdit, setProductToEdit] =
     //     useState<ResponseProductDto | null>(null);
 
     useEffect(() => {
         loadUsers();
+        loadRoles();
     }, []);
 
     const loadUsers = async () => {
@@ -22,6 +25,20 @@ export function Users() {
         } catch (error) {
             console.error('Error cargando productos:', error);
         }
+    };
+
+    const loadRoles = async () => {
+        try {
+            const data = await rolesService.get();
+            setRoles(data);
+        } catch (error) {
+            console.error('Error cargando productos:', error);
+        }
+    };
+
+    const handleGetRoleName = (roleId: string[] | undefined) => {
+        const role = roles.find((r) => r.id === roleId[0]);
+        return role ? role.name : 'User';
     };
 
     const handleEdit = (id: string) => {
@@ -119,7 +136,7 @@ export function Users() {
                                             {user.email}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600">
-                                            {user.rolesId}
+                                            {handleGetRoleName(user.rolesId)}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-900 text-right">
                                             {user.isActive

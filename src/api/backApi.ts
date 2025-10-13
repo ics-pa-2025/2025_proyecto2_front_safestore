@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getApiUrl } from '../services/environment.ts';
+import { getFromLocalStorage } from '../helpers/localStorage.helper.ts';
 
 function getBackApiUrl(): string {
     const fromWindow = (window as any).__ENV?.VITE_API_URL;
@@ -17,8 +18,7 @@ export const backApi = axios.create({
     headers: { 'Content-Type': 'application/json' },
 });
 
-// Inyectar token inicial
-const token = localStorage.getItem('token');
+const token = getFromLocalStorage<string>('token');
 if (token) {
     backApi.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 }
