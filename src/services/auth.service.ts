@@ -5,12 +5,12 @@ import {
     removeFromLocalStorage,
     saveToLocalStorage,
 } from '../helpers/localStorage.helper';
-import type {ApiErrorDto} from "../dto/api-error.dto.ts";
-import type {AuthResponse} from "../dto/auth/auth-response.dto.ts";
+import type { ApiErrorDto } from '../dto/api-error.dto.ts';
+import type { AuthResponse } from '../dto/auth/auth-response.dto.ts';
 import { getAuthApiUrl } from './environment';
 
 const authApi = axios.create({
-    baseURL: getAuthApiUrl() + "/auth",
+    baseURL: getAuthApiUrl() + '/auth',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ class AuthService {
     async login(email: string, password: string): Promise<AuthResponse> {
         try {
             const response: AxiosResponse<AuthResponse> = await authApi.post(
-                '/auth/login',
+                '/login',
                 { email, password }
             );
             const data = response.data;
@@ -57,7 +57,7 @@ class AuthService {
     ): Promise<AuthResponse> {
         try {
             const response: AxiosResponse<AuthResponse> = await authApi.post(
-                '/auth/register',
+                '/register',
                 {
                     email,
                     password,
