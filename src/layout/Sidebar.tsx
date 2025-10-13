@@ -1,5 +1,13 @@
 import { authService } from '../services/auth.service.ts';
-import { BarChart3, Home, LogOut, Package, Tag, User } from 'lucide-react';
+import {
+    BarChart3,
+    Home,
+    LogOut,
+    Package,
+    Tag,
+    User,
+    Users,
+} from 'lucide-react';
 import { sidebarStyles } from './classes.tsx';
 
 export default function Sidebar() {
@@ -19,6 +27,10 @@ export default function Sidebar() {
                     <a className={sidebarStyles.linkClass} href="/dashboard">
                         <BarChart3 className={sidebarStyles.iconClass} />
                         Dashboard
+                    </a>
+                    <a className={sidebarStyles.linkClass} href="/users">
+                        <Users className={sidebarStyles.iconClass} />
+                        Users
                     </a>
                     <a className={sidebarStyles.linkClass} href="/products">
                         <Package className={sidebarStyles.iconClass} />
