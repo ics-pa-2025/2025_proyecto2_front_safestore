@@ -17,6 +17,7 @@ import { Home } from './components/pages/home/home.tsx';
 import './services/api.ts';
 import { Brands } from './components/pages/brands/brands.tsx';
 import { BrandsForm } from './components/pages/brands/brands-form.tsx';
+import { Users } from './components/pages/users/users.tsx';
 
 function App() {
     return (
@@ -40,6 +41,7 @@ function App() {
                     <Route path="profile" element={<Profile />} />
                     <Route path="brands" element={<Brands />} />
                     <Route path="brands-form" element={<BrandsForm />} />
+                    <Route path="users" element={<Users />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace />} />

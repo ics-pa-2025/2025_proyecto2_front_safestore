@@ -1,57 +1,58 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import type { ResponseProductDto } from '../../../dto/product/response-product.dto.ts';
-import { productService } from '../../../services/product.service.ts';
 import { Pencil, Trash2 } from 'lucide-react';
-import { ProductForm } from './product-form.tsx'; // Importar el modal
+import type { ResponseUserDto } from '../../../dto/user/response-user.dto.ts';
+import { userService } from '../../../services/user.service.ts';
 
-export function Product() {
-    const [productos, setProducts] = useState<ResponseProductDto[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [productToEdit, setProductToEdit] =
-        useState<ResponseProductDto | null>(null);
+export function Users() {
+    const [users, setUsers] = useState<ResponseUserDto[]>([]);
+    // const [isModalOpen, setIsModalOpen] = useState(false);
+    // const [productToEdit, setProductToEdit] =
+    //     useState<ResponseProductDto | null>(null);
 
     useEffect(() => {
-        loadProducts();
+        loadUsers();
     }, []);
 
-    const loadProducts = async () => {
+    const loadUsers = async () => {
         try {
-            const data = await productService.get();
-            setProducts(data);
+            const data = await userService.get();
+            setUsers(data);
         } catch (error) {
             console.error('Error cargando productos:', error);
         }
     };
 
-    const handleEdit = (id: number) => {
-        const product = productos.find((p) => p.id === id);
-        if (product) {
-            setProductToEdit(product);
-            setIsModalOpen(true);
-        }
+    const handleEdit = (id: string) => {
+        console.log(id);
+        // const product = productos.find((p) => p.id === id);
+        // if (product) {
+        //     setProductToEdit(product);
+        //     setIsModalOpen(true);
+        // }
     };
 
-    const handleAddProduct = () => {
-        setProductToEdit(null);
-        setIsModalOpen(true);
+    const handleAddUser = () => {
+        // setProductToEdit(null);
+        // setIsModalOpen(true);
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setProductToEdit(null);
-    };
+    // const handleCloseModal = () => {
+    //     setIsModalOpen(false);
+    //     setProductToEdit(null);
+    // };
 
-    const handleSuccess = () => {
-        loadProducts();
-    };
+    // const handleSuccess = () => {
+    //     loadProducts();
+    // };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string) => {
+        console.log(id);
         if (window.confirm('¿Estás seguro de eliminar este producto?')) {
             try {
-                await productService.delete(id);
-                loadProducts();
+                // await productService.delete(id);
+                loadUsers();
             } catch (error) {
                 console.error('Error eliminando producto:', error);
             }
@@ -62,12 +63,12 @@ export function Product() {
         <div className="register-container">
             <div className="register-card">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold mb-6">Product</h1>
+                    <h1 className="text-2xl font-bold mb-6">Users</h1>
                     <button
-                        onClick={handleAddProduct}
+                        onClick={handleAddUser}
                         className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
                     >
-                        Agregar producto
+                        + Add User
                     </button>
                 </div>
 
@@ -76,27 +77,27 @@ export function Product() {
                         <thead className="bg-gray-100">
                             <tr>
                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 border-b">
-                                    Nombre
+                                    Name
                                 </th>
                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 border-b">
-                                    Categoría (ID)
+                                    Email
                                 </th>
                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 border-b">
-                                    Línea (ID)
+                                    Role
                                 </th>
                                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 border-b">
-                                    Precio
+                                    Status
                                 </th>
                                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700 border-b">
-                                    Stock
+                                    Phone
                                 </th>
                                 <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700 border-b">
-                                    Acciones
+                                    Accions
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            {productos.length === 0 ? (
+                            {users.length === 0 ? (
                                 <tr>
                                     <td
                                         colSpan={6}
@@ -106,30 +107,32 @@ export function Product() {
                                     </td>
                                 </tr>
                             ) : (
-                                productos.map((producto) => (
+                                users.map((user) => (
                                     <tr
-                                        key={producto.id}
+                                        key={user.id}
                                         className="hover:bg-gray-50 border-b"
                                     >
                                         <td className="px-6 py-4 text-sm text-gray-900">
-                                            {producto.name}
+                                            {user.fullname}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600">
-                                            {producto.brandId}
+                                            {user.email}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600">
-                                            {producto.lineId}
+                                            {user.rolesId}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-900 text-right">
-                                            ${producto.price.toFixed(2)}
+                                            {user.isActive
+                                                ? 'Active'
+                                                : 'Inactive'}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-900 text-right">
-                                            {producto.stock}
+                                            {user.phone}
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <button
                                                 onClick={() =>
-                                                    handleEdit(producto.id)
+                                                    handleEdit(user.id)
                                                 }
                                                 className="px-4 py-2 bg-green-500 text-white text-sm rounded hover:bg-green-600 mr-2"
                                             >
@@ -137,7 +140,7 @@ export function Product() {
                                             </button>
                                             <button
                                                 onClick={() =>
-                                                    handleDelete(producto.id)
+                                                    handleDelete(user.id)
                                                 }
                                                 className="px-4 py-2 bg-red-500 text-white text-sm rounded hover:bg-red-600"
                                             >
@@ -153,12 +156,12 @@ export function Product() {
             </div>
 
             {/* Modal */}
-            <ProductForm
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                onSuccess={handleSuccess}
-                productToEdit={productToEdit}
-            />
+            {/*<ProductForm*/}
+            {/*    isOpen={isModalOpen}*/}
+            {/*    onClose={handleCloseModal}*/}
+            {/*    onSuccess={handleSuccess}*/}
+            {/*    productToEdit={productToEdit}*/}
+            {/*/>*/}
         </div>
     );
 }
