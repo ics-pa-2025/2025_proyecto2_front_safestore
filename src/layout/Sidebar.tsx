@@ -4,6 +4,7 @@ import {
     LogOut,
     Package,
     Tag,
+    Truck,
     User,
     Users,
 } from 'lucide-react';
@@ -34,6 +35,10 @@ export default function Sidebar() {
                     <a className={sidebarStyles.linkClass} href="/brands">
                         <Tag className={sidebarStyles.iconClass} />
                         <p className={sidebarStyles.iconClass}>Brands</p>   
+                    </a>
+                    <a className={sidebarStyles.linkClass} href="/suppliers">
+                        <Truck className={sidebarStyles.iconClass} />
+                        <p className={sidebarStyles.iconClass}>Suppliers</p>   
                     </a>
                     <a className={sidebarStyles.linkClass} href="/profile">
                         <User className={sidebarStyles.iconClass} />
