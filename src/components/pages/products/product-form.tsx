@@ -1,28 +1,20 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import type { RequestProductDto } from '../../../dto/product/request-product.dto.ts';
-import type { ResponseProductDto } from '../../../dto/product/response-product.dto.ts';
 import type { ResponseBrandDto } from '../../../dto/brands/response-brand.dto.ts';
 import type { ResponseLineDto } from '../../../dto/line/response-line.dto.ts';
 import { productService } from '../../../services/product.service.ts';
 import { brandsService } from '../../../services/brands.service.ts';
 import { lineService } from '../../../services/line.service.ts';
+import { formStyles } from '../../common/FormStyles.tsx';
 
-interface ProductFormProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSuccess: () => void;
-    productToEdit?: ResponseProductDto | null;
-}
-
-export function ProductForm({
-    isOpen,
-    onClose,
-    onSuccess,
-    productToEdit,
-}: ProductFormProps) {
+export function ProductForm() {
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const productId = searchParams.get('id');
+    const isEditing = Boolean(productId);
     const [formData, setFormData] = useState<RequestProductDto>({
         name: '',
         description: '',
@@ -38,24 +30,35 @@ export function ProductForm({
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        if (isOpen) {
-            loadBrands();
-            loadLines();
+        loadBrands();
+        loadLines();
 
-            if (productToEdit) {
-                setFormData({
-                    name: productToEdit.name,
-                    description: productToEdit.description || '',
-                    price: productToEdit.price,
-                    stock: productToEdit.stock,
-                    brandId: productToEdit.brandId,
-                    lineId: productToEdit.lineId,
-                });
-            } else {
-                resetForm();
-            }
+        if (isEditing && productId) {
+            loadProduct(productId);
         }
-    }, [isOpen, productToEdit]);
+    }, [isEditing, productId]);
+
+    const loadProduct = async (id: string) => {
+        try {
+            setLoading(true);
+            const products = await productService.get();
+            const product = products.find((p) => p.id === parseInt(id));
+            if (product) {
+                setFormData({
+                    name: product.name,
+                    description: product.description || '',
+                    price: product.price,
+                    stock: product.stock,
+                    brandId: product.brandId,
+                    lineId: product.lineId,
+                });
+            }
+        } catch (error) {
+            console.error('Error cargando producto:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const loadBrands = async () => {
         try {
@@ -150,17 +153,12 @@ export function ProductForm({
 
         setLoading(true);
         try {
-            if (productToEdit) {
-                await productService.update(
-                    productToEdit.id.toString(),
-                    formData
-                );
+            if (isEditing && productId) {
+                await productService.update(productId, formData);
             } else {
                 await productService.create(formData);
             }
-            onSuccess();
-            onClose();
-            resetForm();
+            navigate('/products');
         } catch (error) {
             console.error('Error guardando producto:', error);
             alert(
@@ -171,104 +169,82 @@ export function ProductForm({
         }
     };
 
-    const handleClose = () => {
-        resetForm();
-        onClose();
+    const handleCancel = () => {
+        navigate('/products');
     };
 
-    if (!isOpen) return null;
+    if (loading && isEditing) {
+        return (
+            <div className={formStyles.loadingContainer}>
+                <div className={formStyles.loadingContent}>
+                    <div className={formStyles.loadingSpinner}></div>
+                    <p className={formStyles.loadingText}>Cargando producto...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="fixed inset-0  bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                {/* Header */}
-                <div className="flex justify-between items-center p-6 border-b">
-                    <h2 className="text-2xl font-bold text-gray-800">
-                        {productToEdit ? 'Editar Producto' : 'Nuevo Producto'}
-                    </h2>
-                    <button
-                        onClick={handleClose}
-                        className="text-gray-500 hover:text-gray-700 transition-colors"
-                        disabled={loading}
-                    >
-                        <X size={24} />
-                    </button>
+        <div>
+            <div className={formStyles.pageContainer}>
+                <div className={formStyles.header}>
+                    <h1 className={formStyles.title}>
+                        {isEditing ? 'Editar Producto' : 'Nuevo Producto'}
+                    </h1>
+                    <div className={formStyles.buttonContainer}>
+                        <button
+                            type="button"
+                            onClick={handleCancel}
+                            className={formStyles.cancelButton}
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            form="product-form"
+                            disabled={loading}
+                            className={formStyles.submitButton}
+                        >
+                            {loading ? 'Guardando...' : isEditing ? 'Actualizar' : 'Crear'}
+                        </button>
+                    </div>
                 </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6">
-                    <div className="space-y-4">
-                        {/* Nombre */}
-                        <div>
-                            <label
-                                htmlFor="name"
-                                className="block text-sm font-medium text-gray-700 mb-1"
-                            >
-                                Nombre <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                id="name"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                    errors.name
-                                        ? 'border-red-500'
-                                        : 'border-gray-300'
-                                }`}
-                                placeholder="Ingrese el nombre del producto"
-                            />
-                            {errors.name && (
-                                <p className="text-red-500 text-sm mt-1">
-                                    {errors.name}
-                                </p>
-                            )}
-                        </div>
+                <div className={formStyles.formContainer}>
+                    <form id="product-form" onSubmit={handleSubmit} className={formStyles.form}>
+                        <div className={formStyles.fieldGrid}>
+                            {/* Nombre */}
+                            <div className={formStyles.fieldWrapper}>
+                                <label htmlFor="name" className={formStyles.label}>
+                                    Nombre <span className={formStyles.required}>*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    placeholder="Nombre del producto"
+                                    className={formStyles.input}
+                                />
+                                {errors.name && (
+                                    <p className={formStyles.errorMessage}>{errors.name}</p>
+                                )}
+                            </div>
 
-                        {/* Descripción */}
-                        <div>
-                            <label
-                                htmlFor="description"
-                                className="block text-sm font-medium text-gray-700 mb-1"
-                            >
-                                Descripción
-                            </label>
-                            <textarea
-                                id="description"
-                                name="description"
-                                value={formData.description}
-                                onChange={handleChange}
-                                rows={3}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Ingrese una descripción (opcional)"
-                            />
-                        </div>
-
-                        {/* Marca y Línea */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label
-                                    htmlFor="brandId"
-                                    className="block text-sm font-medium text-gray-700 mb-1"
-                                >
-                                    Marca{' '}
-                                    <span className="text-red-500">*</span>
+                            {/* Marca */}
+                            <div className={formStyles.fieldWrapper}>
+                                <label htmlFor="brandId" className={formStyles.label}>
+                                    Marca <span className={formStyles.required}>*</span>
                                 </label>
                                 <select
                                     id="brandId"
                                     name="brandId"
                                     value={formData.brandId}
                                     onChange={handleChange}
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        errors.brandId
-                                            ? 'border-red-500'
-                                            : 'border-gray-300'
-                                    }`}
+                                    className={formStyles.select}
                                 >
-                                    <option value={0}>
-                                        Seleccione una marca
-                                    </option>
+                                    <option value={0}>Seleccionar marca</option>
                                     {brands.map((brand) => (
                                         <option key={brand.id} value={brand.id}>
                                             {brand.name}
@@ -276,57 +252,14 @@ export function ProductForm({
                                     ))}
                                 </select>
                                 {errors.brandId && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                        {errors.brandId}
-                                    </p>
+                                    <p className={formStyles.errorMessage}>{errors.brandId}</p>
                                 )}
                             </div>
 
-                            <div>
-                                <label
-                                    htmlFor="lineId"
-                                    className="block text-sm font-medium text-gray-700 mb-1"
-                                >
-                                    Línea{' '}
-                                    <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    id="lineId"
-                                    name="lineId"
-                                    value={formData.lineId}
-                                    onChange={handleChange}
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        errors.lineId
-                                            ? 'border-red-500'
-                                            : 'border-gray-300'
-                                    }`}
-                                >
-                                    <option value={0}>
-                                        Seleccione una línea
-                                    </option>
-                                    {lines.map((line) => (
-                                        <option key={line.id} value={line.id}>
-                                            {line.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.lineId && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                        {errors.lineId}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Precio y Stock */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label
-                                    htmlFor="price"
-                                    className="block text-sm font-medium text-gray-700 mb-1"
-                                >
-                                    Precio{' '}
-                                    <span className="text-red-500">*</span>
+                            {/* Precio */}
+                            <div className={formStyles.fieldWrapper}>
+                                <label htmlFor="price" className={formStyles.label}>
+                                    Precio <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="number"
@@ -336,27 +269,42 @@ export function ProductForm({
                                     onChange={handleChange}
                                     step="0.01"
                                     min="0"
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        errors.price
-                                            ? 'border-red-500'
-                                            : 'border-gray-300'
-                                    }`}
                                     placeholder="0.00"
+                                    className={formStyles.input}
                                 />
                                 {errors.price && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                        {errors.price}
-                                    </p>
+                                    <p className={formStyles.errorMessage}>{errors.price}</p>
                                 )}
                             </div>
 
-                            <div>
-                                <label
-                                    htmlFor="stock"
-                                    className="block text-sm font-medium text-gray-700 mb-1"
+                            {/* Línea */}
+                            <div className={formStyles.fieldWrapper}>
+                                <label htmlFor="lineId" className={formStyles.label}>
+                                    Línea <span className={formStyles.required}>*</span>
+                                </label>
+                                <select
+                                    id="lineId"
+                                    name="lineId"
+                                    value={formData.lineId}
+                                    onChange={handleChange}
+                                    className={formStyles.select}
                                 >
-                                    Stock{' '}
-                                    <span className="text-red-500">*</span>
+                                    <option value={0}>Seleccionar línea</option>
+                                    {lines.map((line) => (
+                                        <option key={line.id} value={line.id}>
+                                            {line.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.lineId && (
+                                    <p className={formStyles.errorMessage}>{errors.lineId}</p>
+                                )}
+                            </div>
+
+                            {/* Stock */}
+                            <div className={formStyles.fieldWrapper}>
+                                <label htmlFor="stock" className={formStyles.label}>
+                                    Stock <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="number"
@@ -365,45 +313,32 @@ export function ProductForm({
                                     value={formData.stock}
                                     onChange={handleChange}
                                     min="0"
-                                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        errors.stock
-                                            ? 'border-red-500'
-                                            : 'border-gray-300'
-                                    }`}
                                     placeholder="0"
+                                    className={formStyles.input}
                                 />
                                 {errors.stock && (
-                                    <p className="text-red-500 text-sm mt-1">
-                                        {errors.stock}
-                                    </p>
+                                    <p className={formStyles.errorMessage}>{errors.stock}</p>
                                 )}
                             </div>
-                        </div>
-                    </div>
 
-                    {/* Botones */}
-                    <div className="flex justify-end gap-3 mt-6 pt-6 border-t">
-                        <button
-                            type="button"
-                            onClick={handleClose}
-                            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
-                            disabled={loading}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
-                            disabled={loading}
-                        >
-                            {loading
-                                ? 'Guardando...'
-                                : productToEdit
-                                  ? 'Actualizar'
-                                  : 'Crear'}
-                        </button>
-                    </div>
-                </form>
+                            {/* Descripción */}
+                            <div className={formStyles.fullWidthField}>
+                                <label htmlFor="description" className={formStyles.label}>
+                                    Descripción
+                                </label>
+                                <textarea
+                                    id="description"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                    placeholder="Descripción opcional"
+                                    rows={3}
+                                    className={formStyles.textarea}
+                                />
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );

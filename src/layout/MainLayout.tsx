@@ -6,21 +6,22 @@ import { Outlet } from "react-router-dom";
 import Header from './Header.tsx';
 import Sidebar from './Sidebar.tsx';
 import Footer from './Footer.tsx';
-import { mainLayoutStyles } from './classes.tsx';
+import { mainLayoutStyles } from './styles.tsx';
 
 const MainLayout: React.FC = () => {
     return (
-        <div className={mainLayoutStyles.containerClass}>
+        <div >
             <Header />
 
-            <div className={mainLayoutStyles.flexClass}>
+            <div>
                 <Sidebar />
                 
-                <main className={mainLayoutStyles.mainClass}>
+                <main >
                     <div className={mainLayoutStyles.contentClass}>
                         <Outlet />
                     </div>
                 </main>
+
             </div>
             
             <Footer />

@@ -75,12 +75,6 @@ export function Login() {
                         Login
                     </button>
 
-                    <p className="register-footer">
-                        ¿Do you want to sign up?{" "}
-                        <a href="/register" className="register-link">
-                            Sign up here
-                        </a>
-                    </p>
                 </form>
             </div>
         </div>

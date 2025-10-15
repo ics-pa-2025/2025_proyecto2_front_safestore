@@ -12,12 +12,13 @@ import ProtectedRoute from './guards/ProtectedRoute.tsx';
 import { Dashboard } from './components/pages/dashboard/dashboard.tsx';
 import { Profile } from './components/pages/profile/profile.tsx';
 import { Product } from './components/pages/products/product.tsx';
-import { Home } from './components/pages/home/home.tsx';
 // Importar para debugging automático
 import './services/api.ts';
 import { Brands } from './components/pages/brands/brands.tsx';
 import { BrandsForm } from './components/pages/brands/brands-form.tsx';
 import { Users } from './components/pages/users/users.tsx';
+import { UserForm } from './components/pages/users/user-form.tsx';
+import { ProductForm } from './components/pages/products/product-form.tsx';
 
 function App() {
     return (
@@ -34,14 +35,15 @@ function App() {
                         </ProtectedRoute>
                     }
                 >
-                    <Route index element={<Navigate to="/home" replace />} />
-                    <Route path="home" element={<Home />} />
+                    <Route index element={<Navigate to="/dashboard" replace />} />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="products" element={<Product />} />
+                    <Route path="product-form" element={<ProductForm />} />
                     <Route path="profile" element={<Profile />} />
                     <Route path="brands" element={<Brands />} />
                     <Route path="brands-form" element={<BrandsForm />} />
                     <Route path="users" element={<Users />} />
+                    <Route path="user-form" element={<UserForm />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace />} />
