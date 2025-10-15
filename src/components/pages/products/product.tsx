@@ -54,11 +54,11 @@ export function Product() {
     };
 
     const handleEdit = (id: number | string) => {
-        navigate(`/products-form?id=${id}`);
+        navigate(`/product-form?id=${id}`);
     };
 
     const handleAddProduct = () => {
-        navigate('/products-form');
+        navigate('/product-form');
     };
 
     const handleDelete = async (id: number | string) => {
@@ -73,7 +73,7 @@ export function Product() {
     };
 
     return (
-        <div className="h-full w-full">
+        <div >
             <div className="h-full flex flex-col">
                 <div className="flex justify-between items-center mb-6">
                     <h1 className="text-2xl font-bold text-slate-800">Products</h1>

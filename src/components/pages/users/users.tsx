@@ -114,18 +114,19 @@ export function Users() {
     };
 
     return (
-            <div className="register-container">
-                <div className="register-card">
-                    <div className="flex justify-between items-center mb-6">
-                        <h1 className="text-2xl font-bold mb-6">Users</h1>
-                        <button
-                                onClick={handleAddUser}
-                                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-                        >
-                            + Add User
-                        </button>
-                    </div>
+        <div>
+            <div className="h-full flex flex-col">
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-2xl font-bold text-slate-800">Users</h1>
+                    <button
+                        onClick={handleAddUser}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                        + Add User
+                    </button>
+                </div>
 
+                <div className="flex-1">
                     <Table
                         data={users}
                         columns={columns}
@@ -135,14 +136,15 @@ export function Users() {
                         getItemId={(user) => user.id}
                     />
                 </div>
-
-                {/* Modal */}
-                <UserForm
-                        isOpen={isModalOpen}
-                        onClose={handleCloseModal}
-                        onSuccess={handleSuccess}
-                        userToEdit={userToEdit}
-                />
             </div>
+
+            {/* Modal */}
+            <UserForm
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onSuccess={handleSuccess}
+                userToEdit={userToEdit}
+            />
+        </div>
     );
 }

@@ -17,7 +17,7 @@ import './services/api.ts';
 import { Brands } from './components/pages/brands/brands.tsx';
 import { BrandsForm } from './components/pages/brands/brands-form.tsx';
 import { Users } from './components/pages/users/users.tsx';
-import { ProductFormPage } from './components/pages/products/product-form-page.tsx';
+import { ProductForm } from './components/pages/products/product-form.tsx';
 
 function App() {
     return (
@@ -37,7 +37,7 @@ function App() {
                     <Route index element={<Navigate to="/dashboard" replace />} />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="products" element={<Product />} />
-                    <Route path="products-form" element={<ProductFormPage />} />
+                    <Route path="product-form" element={<ProductForm />} />
                     <Route path="profile" element={<Profile />} />
                     <Route path="brands" element={<Brands />} />
                     <Route path="brands-form" element={<BrandsForm />} />
