@@ -17,6 +17,7 @@ import './services/api.ts';
 import { Brands } from './components/pages/brands/brands.tsx';
 import { BrandsForm } from './components/pages/brands/brands-form.tsx';
 import { Users } from './components/pages/users/users.tsx';
+import { UserForm } from './components/pages/users/user-form.tsx';
 import { ProductForm } from './components/pages/products/product-form.tsx';
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
                     <Route path="brands" element={<Brands />} />
                     <Route path="brands-form" element={<BrandsForm />} />
                     <Route path="users" element={<Users />} />
+                    <Route path="user-form" element={<UserForm />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace />} />

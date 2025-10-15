@@ -1,17 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { ResponseUserDto } from '../../../dto/user/response-user.dto.ts';
 import { userService } from '../../../services/user.service.ts';
 import { rolesService } from '../../../services/role.service.ts';
-import { UserForm } from './user-form.tsx';
 import Table, { type TableColumn } from '../../common/Table.tsx';
 
 export function Users() {
+    const navigate = useNavigate();
     const [users, setUsers] = useState<ResponseUserDto[]>([]);
     const [roles, setRoles] = useState<any[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [userToEdit, setUserToEdit] = useState<ResponseUserDto | null>(null);
 
     // Definir las columnas de la tabla
     const columns: TableColumn<ResponseUserDto>[] = [
@@ -81,25 +80,11 @@ export function Users() {
     };
 
     const handleEdit = (id: number | string) => {
-        const user = users.find((u) => u.id === String(id));
-        if (user) {
-            setUserToEdit(user);
-            setIsModalOpen(true);
-        }
+        navigate(`/user-form?id=${id}`);
     };
 
     const handleAddUser = () => {
-        setUserToEdit(null);
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setUserToEdit(null);
-    };
-
-    const handleSuccess = () => {
-        loadUsers();
+        navigate('/user-form');
     };
 
     const handleDelete = async (id: number | string) => {
@@ -137,14 +122,6 @@ export function Users() {
                     />
                 </div>
             </div>
-
-            {/* Modal */}
-            <UserForm
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                onSuccess={handleSuccess}
-                userToEdit={userToEdit}
-            />
         </div>
     );
 }
