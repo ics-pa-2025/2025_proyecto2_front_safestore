@@ -1,11 +1,16 @@
-import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import type {ApiErrorDto} from "../dto/api-error.dto.ts";
-import type {AuthResponse} from "../dto/auth/auth-response.dto.ts";
+import axios from 'axios';
+import {
+    getFromLocalStorage,
+    removeFromLocalStorage,
+    saveToLocalStorage,
+} from '../helpers/localStorage.helper';
+import type { ApiErrorDto } from '../dto/api-error.dto.ts';
+import type { AuthResponse } from '../dto/auth/auth-response.dto.ts';
 import { getAuthApiUrl } from './environment';
 
 const authApi = axios.create({
-    baseURL: getAuthApiUrl() + "/auth",
+    baseURL: getAuthApiUrl() + '/auth',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
@@ -29,84 +34,86 @@ authApi.interceptors.response.use(
 class AuthService {
     async login(email: string, password: string): Promise<AuthResponse> {
         try {
-            const payload = {email, password};
-            const response: AxiosResponse<AuthResponse> = await authApi.post('/login', payload);
+            const response: AxiosResponse<AuthResponse> = await authApi.post(
+                '/login',
+                { email, password }
+            );
+            const data = response.data;
 
-            const data = response.data || {};
-            // Accept both accessToken or token fields
             const token = data.accessToken || data.token;
-            if (token) {
-                this.setToken(token);
-            }
+            if (token) this.setToken(token);
+            if (data.user) saveToLocalStorage('user', data.user);
 
             return data;
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                if (error.response?.data) {
-                    const apiError: ApiErrorDto = error.response.data;
-                    throw new Error(apiError.message || 'Login failed');
-                }
-                if (error.code === 'ECONNREFUSED') {
-                    throw new Error('Cannot connect to server. Verify backend is running.');
-                }
-                if (error.code === 'ECONNABORTED') {
-                    throw new Error('Request timed out. Try again.');
-                }
-            }
-            throw new Error('Unexpected error during login');
+            this.handleError(error, 'Login failed');
         }
     }
 
-    async register(email: string, password: string): Promise<AuthResponse> {
+    async register(
+        email: string,
+        password: string,
+        fullname: string
+    ): Promise<AuthResponse> {
         try {
-            const payload = {email, password};
-            const response: AxiosResponse<AuthResponse> = await authApi.post('/register', payload);
+            const response: AxiosResponse<AuthResponse> = await authApi.post(
+                '/register',
+                {
+                    email,
+                    password,
+                    fullname,
+                }
+            );
+            const data = response.data;
 
-            const data = response.data || {};
-            // Accept both accessToken or token fields
             const token = data.accessToken || data.token;
-            if (token) {
-                this.setToken(token);
-            }
+            if (token) this.setToken(token);
+            if (data.user) saveToLocalStorage('user', data.user);
 
             return data;
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                if (error.response?.data) {
-                    const apiError: ApiErrorDto = error.response.data;
-                    // Handle validation error messages array
-                    if (Array.isArray(apiError.message)) {
-                        throw new Error(apiError.message.join(', '));
-                    }
-                    throw new Error(apiError.message || 'Register failed');
-                }
-                if (error.code === 'ECONNREFUSED') {
-                    throw new Error('Cannot connect to server. Verify backend is running.');
-                }
-                if (error.code === 'ECONNABORTED') {
-                    throw new Error('Request timed out. Try again.');
-                }
-            }
-            throw new Error('Unexpected error during register');
+            this.handleError(error, 'Register failed');
         }
     }
 
     logout() {
-        localStorage.removeItem('token');
+        removeFromLocalStorage('token');
+        removeFromLocalStorage('user');
         delete authApi.defaults.headers.common['Authorization'];
     }
 
     setToken(token: string) {
-        localStorage.setItem('token', token);
+        saveToLocalStorage('token', token);
         authApi.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
 
     getToken(): string | null {
-        return localStorage.getItem('token');
+        return getFromLocalStorage<string>('token');
     }
 
     isAuthenticated(): boolean {
         return !!this.getToken();
+    }
+
+    private handleError(error: unknown, defaultMessage: string): never {
+        if (axios.isAxiosError(error)) {
+            if (error.response?.data) {
+                const apiError: ApiErrorDto = error.response.data;
+                const message = Array.isArray(apiError.message)
+                    ? apiError.message.join(', ')
+                    : apiError.message || defaultMessage;
+                throw new Error(message);
+            }
+            if (error.code === 'ECONNREFUSED') {
+                throw new Error(
+                    'Cannot connect to server. Verify backend is running.'
+                );
+            }
+            if (error.code === 'ECONNABORTED') {
+                throw new Error('Request timed out. Try again.');
+            }
+        }
+        throw new Error(defaultMessage);
     }
 }
 
