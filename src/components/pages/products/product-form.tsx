@@ -8,6 +8,7 @@ import type { ResponseLineDto } from '../../../dto/line/response-line.dto.ts';
 import { productService } from '../../../services/product.service.ts';
 import { brandsService } from '../../../services/brands.service.ts';
 import { lineService } from '../../../services/line.service.ts';
+import { formStyles } from '../../common/FormStyles.tsx';
 
 export function ProductForm() {
     const navigate = useNavigate();
@@ -174,10 +175,10 @@ export function ProductForm() {
 
     if (loading && isEditing) {
         return (
-            <div className="flex items-center justify-center min-h-96">
-                <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 border-slate-200 border-t-blue-500"></div>
-                    <p className="mt-4 text-sm sm:text-base text-slate-600 font-medium">Cargando producto...</p>
+            <div className={formStyles.loadingContainer}>
+                <div className={formStyles.loadingContent}>
+                    <div className={formStyles.loadingSpinner}></div>
+                    <p className={formStyles.loadingText}>Cargando producto...</p>
                 </div>
             </div>
         );
@@ -185,16 +186,16 @@ export function ProductForm() {
 
     return (
         <div>
-            <div className="h-full flex flex-col">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
-                    <h1 className="text-xl sm:text-2xl font-bold text-slate-800">
+            <div className={formStyles.pageContainer}>
+                <div className={formStyles.header}>
+                    <h1 className={formStyles.title}>
                         {isEditing ? 'Editar Producto' : 'Nuevo Producto'}
                     </h1>
-                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                    <div className={formStyles.buttonContainer}>
                         <button
                             type="button"
                             onClick={handleCancel}
-                            className="bg-slate-600 text-white text-sm sm:text-base px-3 sm:px-4 py-2 rounded-md hover:bg-slate-700 transition-colors"
+                            className={formStyles.cancelButton}
                         >
                             Cancelar
                         </button>
@@ -202,20 +203,20 @@ export function ProductForm() {
                             type="submit"
                             form="product-form"
                             disabled={loading}
-                            className="bg-blue-600 text-white text-sm sm:text-base px-3 sm:px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className={formStyles.submitButton}
                         >
                             {loading ? 'Guardando...' : isEditing ? 'Actualizar' : 'Crear'}
                         </button>
                     </div>
                 </div>
 
-                <div className="flex-1">
-                    <form id="product-form" onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div className={formStyles.formContainer}>
+                    <form id="product-form" onSubmit={handleSubmit} className={formStyles.form}>
+                        <div className={formStyles.fieldGrid}>
                             {/* Nombre */}
-                            <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1 sm:mb-2">
-                                    Nombre <span className="text-red-500">*</span>
+                            <div className={formStyles.fieldWrapper}>
+                                <label htmlFor="name" className={formStyles.label}>
+                                    Nombre <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -224,24 +225,24 @@ export function ProductForm() {
                                     value={formData.name}
                                     onChange={handleChange}
                                     placeholder="Nombre del producto"
-                                    className="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-slate-300 rounded-md focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className={formStyles.input}
                                 />
                                 {errors.name && (
-                                    <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.name}</p>
+                                    <p className={formStyles.errorMessage}>{errors.name}</p>
                                 )}
                             </div>
 
                             {/* Marca */}
-                            <div>
-                                <label htmlFor="brandId" className="block text-sm font-medium text-slate-700 mb-1 sm:mb-2">
-                                    Marca <span className="text-red-500">*</span>
+                            <div className={formStyles.fieldWrapper}>
+                                <label htmlFor="brandId" className={formStyles.label}>
+                                    Marca <span className={formStyles.required}>*</span>
                                 </label>
                                 <select
                                     id="brandId"
                                     name="brandId"
                                     value={formData.brandId}
                                     onChange={handleChange}
-                                    className="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-slate-300 rounded-md focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className={formStyles.select}
                                 >
                                     <option value={0}>Seleccionar marca</option>
                                     {brands.map((brand) => (
@@ -251,14 +252,14 @@ export function ProductForm() {
                                     ))}
                                 </select>
                                 {errors.brandId && (
-                                    <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.brandId}</p>
+                                    <p className={formStyles.errorMessage}>{errors.brandId}</p>
                                 )}
                             </div>
 
                             {/* Precio */}
-                            <div>
-                                <label htmlFor="price" className="block text-sm font-medium text-slate-700 mb-1 sm:mb-2">
-                                    Precio <span className="text-red-500">*</span>
+                            <div className={formStyles.fieldWrapper}>
+                                <label htmlFor="price" className={formStyles.label}>
+                                    Precio <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="number"
@@ -269,24 +270,24 @@ export function ProductForm() {
                                     step="0.01"
                                     min="0"
                                     placeholder="0.00"
-                                    className="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-slate-300 rounded-md focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className={formStyles.input}
                                 />
                                 {errors.price && (
-                                    <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.price}</p>
+                                    <p className={formStyles.errorMessage}>{errors.price}</p>
                                 )}
                             </div>
 
                             {/* Línea */}
-                            <div>
-                                <label htmlFor="lineId" className="block text-sm font-medium text-slate-700 mb-1 sm:mb-2">
-                                    Línea <span className="text-red-500">*</span>
+                            <div className={formStyles.fieldWrapper}>
+                                <label htmlFor="lineId" className={formStyles.label}>
+                                    Línea <span className={formStyles.required}>*</span>
                                 </label>
                                 <select
                                     id="lineId"
                                     name="lineId"
                                     value={formData.lineId}
                                     onChange={handleChange}
-                                    className="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-slate-300 rounded-md focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className={formStyles.select}
                                 >
                                     <option value={0}>Seleccionar línea</option>
                                     {lines.map((line) => (
@@ -296,14 +297,14 @@ export function ProductForm() {
                                     ))}
                                 </select>
                                 {errors.lineId && (
-                                    <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.lineId}</p>
+                                    <p className={formStyles.errorMessage}>{errors.lineId}</p>
                                 )}
                             </div>
 
                             {/* Stock */}
-                            <div>
-                                <label htmlFor="stock" className="block text-sm font-medium text-slate-700 mb-1 sm:mb-2">
-                                    Stock <span className="text-red-500">*</span>
+                            <div className={formStyles.fieldWrapper}>
+                                <label htmlFor="stock" className={formStyles.label}>
+                                    Stock <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="number"
@@ -313,16 +314,16 @@ export function ProductForm() {
                                     onChange={handleChange}
                                     min="0"
                                     placeholder="0"
-                                    className="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-slate-300 rounded-md focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className={formStyles.input}
                                 />
                                 {errors.stock && (
-                                    <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.stock}</p>
+                                    <p className={formStyles.errorMessage}>{errors.stock}</p>
                                 )}
                             </div>
 
                             {/* Descripción */}
-                            <div className="md:col-span-2">
-                                <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-1 sm:mb-2">
+                            <div className={formStyles.fullWidthField}>
+                                <label htmlFor="description" className={formStyles.label}>
                                     Descripción
                                 </label>
                                 <textarea
@@ -332,7 +333,7 @@ export function ProductForm() {
                                     onChange={handleChange}
                                     placeholder="Descripción opcional"
                                     rows={3}
-                                    className="w-full px-2 sm:px-3 py-2 text-sm sm:text-base border border-slate-300 rounded-md focus:outline-none focus:ring-1 sm:focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-y"
+                                    className={formStyles.textarea}
                                 />
                             </div>
                         </div>
