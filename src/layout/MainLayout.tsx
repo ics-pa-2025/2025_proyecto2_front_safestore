@@ -6,7 +6,7 @@ import { Outlet } from "react-router-dom";
 import Header from './Header.tsx';
 import Sidebar from './Sidebar.tsx';
 import Footer from './Footer.tsx';
-import { mainLayoutStyles } from './classes.tsx';
+import { mainLayoutStyles } from './styles.tsx';
 
 const MainLayout: React.FC = () => {
     return (

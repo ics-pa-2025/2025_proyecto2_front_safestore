@@ -13,11 +13,11 @@ export const headerStyles = {
 export const sidebarStyles = {
     containerClass: "fixed top-16 left-0 w-64 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 shadow-sm overflow-y-auto transition-transform duration-300 ease-in-out lg:translate-x-0 z-40 flex flex-col",
     navClass: "flex-1 p-4 space-y-2",
-    linksClass: "space-y-1 text-primary-600",
-    linkClass: "flex items-center px-3 py-2.5 text-sm font-medium text-primary-600 rounded-lg hover:bg-primary-50 hover:text-primary-700 hover:shadow-sm transition-all duration-200",
-    iconClass: "w-5 h-5 mr-3 text-primary-600",
+    linksClass: "space-y-1 text-gray-600",
+    linkClass: "flex items-center px-3 py-2.5 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 hover:text-gray-600 hover:shadow-sm transition-all duration-200",
+    iconClass: "w-5 h-5 mr-3 text-gray-600",
     logoutContainerClass: "p-4 border-t border-gray-200",
-    logoutBtnClass: "flex items-center w-full px-3 py-2.5 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:shadow-sm transition-all duration-200"
+    logoutBtnClass: "flex items-center px-3 py-2.5 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 hover:text-red-700 hover:shadow-sm transition-all duration-200"
 };
 
 export const footerStyles = {
@@ -39,13 +39,13 @@ export const commonStyles = {
     flexBetween: "flex items-center justify-between",
     
     // Texto
-    textPrimary: "text-primary-600",
+    textPrimary: "text-gray-600",
     textSecondary: "text-gray-500",
     textDanger: "text-red-600",
     
     // Backgrounds
     bgWhite: "bg-white",
-    bgPrimary: "bg-primary-50",
+    bgPrimary: "bg-gray-50",
     
     // Borders
     borderGray: "border-gray-200",

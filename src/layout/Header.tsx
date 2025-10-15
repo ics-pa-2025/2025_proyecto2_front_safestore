@@ -1,5 +1,5 @@
 import { Shield } from 'lucide-react';
-import { headerStyles } from './classes';
+import { headerStyles } from './styles';
 
 export default function Header() {
     return (

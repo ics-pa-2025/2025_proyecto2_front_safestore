@@ -12,7 +12,6 @@ import ProtectedRoute from './guards/ProtectedRoute.tsx';
 import { Dashboard } from './components/pages/dashboard/dashboard.tsx';
 import { Profile } from './components/pages/profile/profile.tsx';
 import { Product } from './components/pages/products/product.tsx';
-import { Home } from './components/pages/home/home.tsx';
 // Importar para debugging automático
 import './services/api.ts';
 import { Brands } from './components/pages/brands/brands.tsx';
@@ -34,8 +33,7 @@ function App() {
                         </ProtectedRoute>
                     }
                 >
-                    <Route index element={<Navigate to="/home" replace />} />
-                    <Route path="home" element={<Home />} />
+                    <Route index element={<Navigate to="/dashboard" replace />} />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="products" element={<Product />} />
                     <Route path="profile" element={<Profile />} />

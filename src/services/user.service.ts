@@ -3,7 +3,6 @@ import { authApi } from '../api/authApi.ts';
 import type { ResponseUserDto } from '../dto/user/response-user.dto.ts';
 import type {UpdateUserDto} from "../dto/user/update-user.dto.ts";
 import type {AuthResponse} from "../dto/auth/auth-response.dto.ts";
-import {saveToLocalStorage} from "../helpers/localStorage.helper.ts";
 
 class UserService {
     async get(): Promise<ResponseUserDto[]> {
@@ -59,6 +58,9 @@ class UserService {
                     address
                 }
             );
+            if (!response.data.user) {
+                throw new Error('No se recibió el usuario en la respuesta');
+            }
             return response.data.user;
         } catch (error) {
             console.log(error);
