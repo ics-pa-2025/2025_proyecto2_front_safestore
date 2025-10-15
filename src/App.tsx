@@ -21,6 +21,8 @@ import { UserForm } from './components/pages/users/user-form.tsx';
 import { ProductForm } from './components/pages/products/product-form.tsx';
 import { Suppliers } from './components/pages/suppliers/suppliers.tsx';
 import { SupplierForm } from './components/pages/suppliers/supplier-form.tsx';
+import { Lines } from './components/pages/lines/lines.tsx';
+import { LineForm } from './components/pages/lines/line-form.tsx';
 
 function App() {
     return (
@@ -44,6 +46,8 @@ function App() {
                     <Route path="profile" element={<Profile />} />
                     <Route path="brands" element={<Brands />} />
                     <Route path="brands-form" element={<BrandsForm />} />
+                    <Route path="lines" element={<Lines />} />
+                    <Route path="line-form" element={<LineForm />} />
                     <Route path="suppliers" element={<Suppliers />} />
                     <Route path="supplier-form" element={<SupplierForm />} />
                     <Route path="users" element={<Users />} />

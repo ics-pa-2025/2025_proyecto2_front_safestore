@@ -1,6 +1,7 @@
 import { authService } from '../services/auth.service.ts';
 import {
     BarChart3,
+    Layers,
     LogOut,
     Package,
     Tag,
@@ -35,6 +36,10 @@ export default function Sidebar() {
                     <a className={sidebarStyles.linkClass} href="/brands">
                         <Tag className={sidebarStyles.iconClass} />
                         <p className={sidebarStyles.iconClass}>Brands</p>   
+                    </a>
+                    <a className={sidebarStyles.linkClass} href="/lines">
+                        <Layers className={sidebarStyles.iconClass} />
+                        <p className={sidebarStyles.iconClass}>Lines</p>   
                     </a>
                     <a className={sidebarStyles.linkClass} href="/suppliers">
                         <Truck className={sidebarStyles.iconClass} />

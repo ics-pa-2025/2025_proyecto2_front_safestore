@@ -4,7 +4,7 @@ import type { RequestLineDto } from '../dto/line/request-line.dto.ts';
 import type { ResponseLineDto } from '../dto/line/response-line.dto.ts';
 
 class LineService {
-    async create(lineCreate: RequestLineDto): Promise<RequestLineDto> {
+    async create(lineCreate: RequestLineDto): Promise<ResponseLineDto> {
         try {
             const response: AxiosResponse<ResponseLineDto> = await backApi.post(
                 'lines',
@@ -13,7 +13,7 @@ class LineService {
             return response.data;
         } catch (error) {
             console.log(error);
-            throw new Error('Error al crear el perfil');
+            throw new Error('Error al crear la línea');
         }
     }
 
@@ -27,7 +27,7 @@ class LineService {
             return response.data;
         } catch (error) {
             console.log(error);
-            throw new Error('Error al actualizar el perfil');
+            throw new Error('Error al actualizar la línea');
         }
     }
 
@@ -38,7 +38,7 @@ class LineService {
             return response.data;
         } catch (error) {
             console.log(error);
-            throw new Error('Error al actualizar el perfil');
+            throw new Error('Error al obtener las líneas');
         }
     }
 
@@ -47,7 +47,51 @@ class LineService {
             await backApi.delete(`lines/${id}`);
         } catch (error) {
             console.log(error);
-            throw new Error('Error al eliminar el perfil');
+            throw new Error('Error al eliminar la línea');
+        }
+    }
+
+    async getById(id: string): Promise<ResponseLineDto> {
+        try {
+            const response: AxiosResponse<ResponseLineDto> =
+                await backApi.get(`lines/${id}`);
+            return response.data;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error al obtener la línea');
+        }
+    }
+
+    async getActive(): Promise<ResponseLineDto[]> {
+        try {
+            const response: AxiosResponse<ResponseLineDto[]> =
+                await backApi.get('lines?active=true');
+            return response.data;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error al obtener las líneas activas');
+        }
+    }
+
+    async softDelete(id: number): Promise<ResponseLineDto> {
+        try {
+            const response: AxiosResponse<ResponseLineDto> =
+                await backApi.delete(`lines/${id}/soft`);
+            return response.data;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error al desactivar la línea');
+        }
+    }
+
+    async restore(id: number): Promise<ResponseLineDto> {
+        try {
+            const response: AxiosResponse<ResponseLineDto> =
+                await backApi.patch(`lines/${id}/restore`);
+            return response.data;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error al restaurar la línea');
         }
     }
 }
