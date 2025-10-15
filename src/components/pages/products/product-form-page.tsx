@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import type { RequestProductDto } from '../../../dto/product/request-product.dto.ts';
 import type { ResponseProductDto } from '../../../dto/product/response-product.dto.ts';
 import type { ResponseBrandDto } from '../../../dto/brands/response-brand.dto.ts';
@@ -10,19 +11,12 @@ import { productService } from '../../../services/product.service.ts';
 import { brandsService } from '../../../services/brands.service.ts';
 import { lineService } from '../../../services/line.service.ts';
 
-interface ProductFormProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSuccess: () => void;
-    productToEdit?: ResponseProductDto | null;
-}
+export function ProductFormPage() {
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const productId = searchParams.get('id');
+    const isEditing = Boolean(productId);
 
-export function ProductForm({
-    isOpen,
-    onClose,
-    onSuccess,
-    productToEdit,
-}: ProductFormProps) {
     const [formData, setFormData] = useState<RequestProductDto>({
         name: '',
         description: '',
@@ -38,24 +32,35 @@ export function ProductForm({
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        if (isOpen) {
-            loadBrands();
-            loadLines();
+        loadBrands();
+        loadLines();
 
-            if (productToEdit) {
-                setFormData({
-                    name: productToEdit.name,
-                    description: productToEdit.description || '',
-                    price: productToEdit.price,
-                    stock: productToEdit.stock,
-                    brandId: productToEdit.brandId,
-                    lineId: productToEdit.lineId,
-                });
-            } else {
-                resetForm();
-            }
+        if (isEditing && productId) {
+            loadProduct(productId);
         }
-    }, [isOpen, productToEdit]);
+    }, [isEditing, productId]);
+
+    const loadProduct = async (id: string) => {
+        try {
+            setLoading(true);
+            const products = await productService.get();
+            const product = products.find((p) => p.id === parseInt(id));
+            if (product) {
+                setFormData({
+                    name: product.name,
+                    description: product.description || '',
+                    price: product.price,
+                    stock: product.stock,
+                    brandId: product.brandId,
+                    lineId: product.lineId,
+                });
+            }
+        } catch (error) {
+            console.error('Error cargando producto:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const loadBrands = async () => {
         try {
@@ -73,18 +78,6 @@ export function ProductForm({
         } catch (error) {
             console.error('Error cargando líneas:', error);
         }
-    };
-
-    const resetForm = () => {
-        setFormData({
-            name: '',
-            description: '',
-            price: 0,
-            stock: 0,
-            brandId: 0,
-            lineId: 0,
-        });
-        setErrors({});
     };
 
     const validateForm = (): boolean => {
@@ -150,17 +143,12 @@ export function ProductForm({
 
         setLoading(true);
         try {
-            if (productToEdit) {
-                await productService.update(
-                    productToEdit.id.toString(),
-                    formData
-                );
+            if (isEditing && productId) {
+                await productService.update(productId, formData);
             } else {
                 await productService.create(formData);
             }
-            onSuccess();
-            onClose();
-            resetForm();
+            navigate('/products');
         } catch (error) {
             console.error('Error guardando producto:', error);
             alert(
@@ -171,35 +159,45 @@ export function ProductForm({
         }
     };
 
-    const handleClose = () => {
-        resetForm();
-        onClose();
+    const handleCancel = () => {
+        navigate('/products');
     };
 
-    if (!isOpen) return null;
+    if (loading && isEditing) {
+        return (
+            <div className="flex items-center justify-center min-h-96">
+                <div className="text-center">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-slate-200 border-t-blue-500"></div>
+                    <p className="mt-4 text-slate-600 font-medium">Cargando producto...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="fixed inset-0 bg-slate-900 bg-opacity-10 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full border border-slate-200">
+        <div className="h-full flex items-center justify-center">
+            <div className="bg-white rounded-xl shadow-lg w-full max-w-4xl border border-slate-200">
                 {/* Header */}
-                <div className="flex justify-between items-center px-6 py-3 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-gray-50 rounded-t-xl">
-                    <h2 className="text-lg font-medium text-slate-700">
-                        {productToEdit ? 'Editar Producto' : 'Nuevo Producto'}
-                    </h2>
-                    <button
-                        onClick={handleClose}
-                        className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100"
-                        disabled={loading}
-                    >
-                        <X size={18} />
-                    </button>
+                <div className="bg-gradient-to-r from-slate-50 to-gray-50 px-6 py-3 border-b border-slate-100 rounded-t-xl">
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={handleCancel}
+                            className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-lg hover:bg-slate-100"
+                        >
+                            <ArrowLeft size={18} />
+                        </button>
+                        <h1 className="text-lg font-medium text-slate-700">
+                            {isEditing ? 'Editar Producto' : 'Nuevo Producto'}
+                        </h1>
+                    </div>
                 </div>
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6">
-                    <div className="space-y-4">
-                        {/* Nombre y Descripción */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* Columna Izquierda */}
+                        <div className="space-y-4">
+                            {/* Nombre */}
                             <div>
                                 <label htmlFor="name" className="block text-sm font-medium text-slate-600 mb-1">
                                     Nombre <span className="text-red-500">*</span>
@@ -220,24 +218,7 @@ export function ProductForm({
                                 )}
                             </div>
 
-                            <div>
-                                <label htmlFor="description" className="block text-sm font-medium text-slate-600 mb-1">
-                                    Descripción
-                                </label>
-                                <input
-                                    type="text"
-                                    id="description"
-                                    name="description"
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                    className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-slate-300 transition-colors"
-                                    placeholder="Descripción opcional"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Marca y Línea */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            {/* Marca */}
                             <div>
                                 <label htmlFor="brandId" className="block text-sm font-medium text-slate-600 mb-1">
                                     Marca <span className="text-red-500">*</span>
@@ -263,6 +244,49 @@ export function ProductForm({
                                 )}
                             </div>
 
+                            {/* Precio */}
+                            <div>
+                                <label htmlFor="price" className="block text-sm font-medium text-slate-600 mb-1">
+                                    Precio <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="number"
+                                    id="price"
+                                    name="price"
+                                    value={formData.price}
+                                    onChange={handleChange}
+                                    step="0.01"
+                                    min="0"
+                                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                                        errors.price ? 'border-red-300 bg-red-50' : 'border-slate-200 hover:border-slate-300'
+                                    }`}
+                                    placeholder="0.00"
+                                />
+                                {errors.price && (
+                                    <p className="text-red-500 text-xs mt-1">{errors.price}</p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Columna Derecha */}
+                        <div className="space-y-4">
+                            {/* Descripción */}
+                            <div>
+                                <label htmlFor="description" className="block text-sm font-medium text-slate-600 mb-1">
+                                    Descripción
+                                </label>
+                                <input
+                                    type="text"
+                                    id="description"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-slate-300 transition-colors"
+                                    placeholder="Descripción opcional"
+                                />
+                            </div>
+
+                            {/* Línea */}
                             <div>
                                 <label htmlFor="lineId" className="block text-sm font-medium text-slate-600 mb-1">
                                     Línea <span className="text-red-500">*</span>
@@ -287,32 +311,8 @@ export function ProductForm({
                                     <p className="text-red-500 text-xs mt-1">{errors.lineId}</p>
                                 )}
                             </div>
-                        </div>
 
-                        {/* Precio y Stock */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            <div>
-                                <label htmlFor="price" className="block text-sm font-medium text-slate-600 mb-1">
-                                    Precio <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="number"
-                                    id="price"
-                                    name="price"
-                                    value={formData.price}
-                                    onChange={handleChange}
-                                    step="0.01"
-                                    min="0"
-                                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                                        errors.price ? 'border-red-300 bg-red-50' : 'border-slate-200 hover:border-slate-300'
-                                    }`}
-                                    placeholder="0.00"
-                                />
-                                {errors.price && (
-                                    <p className="text-red-500 text-xs mt-1">{errors.price}</p>
-                                )}
-                            </div>
-
+                            {/* Stock */}
                             <div>
                                 <label htmlFor="stock" className="block text-sm font-medium text-slate-600 mb-1">
                                     Stock <span className="text-red-500">*</span>
@@ -337,21 +337,20 @@ export function ProductForm({
                     </div>
 
                     {/* Botones */}
-                    <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+                    <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
                         <button
                             type="button"
-                            onClick={handleClose}
-                            className="px-4 py-2 text-sm border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-colors"
-                            disabled={loading}
+                            onClick={handleCancel}
+                            className="px-6 py-2 text-sm border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 hover:border-slate-300 transition-colors"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed shadow-sm"
+                            className="px-8 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-blue-300 disabled:cursor-not-allowed shadow-sm"
                             disabled={loading}
                         >
-                            {loading ? 'Guardando...' : productToEdit ? 'Actualizar' : 'Crear'}
+                            {loading ? 'Guardando...' : isEditing ? 'Actualizar' : 'Crear'}
                         </button>
                     </div>
                 </form>

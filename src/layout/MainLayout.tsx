@@ -10,17 +10,18 @@ import { mainLayoutStyles } from './styles.tsx';
 
 const MainLayout: React.FC = () => {
     return (
-        <div className={mainLayoutStyles.containerClass}>
+        <div >
             <Header />
 
-            <div className={mainLayoutStyles.flexClass}>
+            <div>
                 <Sidebar />
                 
-                <main className={mainLayoutStyles.mainClass}>
+                <main >
                     <div className={mainLayoutStyles.contentClass}>
                         <Outlet />
                     </div>
                 </main>
+
             </div>
             
             <Footer />

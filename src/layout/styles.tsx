@@ -28,9 +28,9 @@ export const footerStyles = {
 
 export const mainLayoutStyles = {
     containerClass: "min-h-screen bg-gray-50/30",
-    flexClass: "flex",
-    mainClass: "flex-1 ml-64 pt-16 pb-20 min-h-screen",
-    contentClass: "p-6"
+    flexClass: "",
+    mainClass: "",
+    contentClass: "fixed top-16 left-64 right-0 bottom-16 overflow-auto p-6"
 };
 
 export const commonStyles = {

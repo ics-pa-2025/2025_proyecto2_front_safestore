@@ -1,16 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { ResponseProductDto } from '../../../dto/product/response-product.dto.ts';
 import { productService } from '../../../services/product.service.ts';
-import { ProductForm } from './product-form.tsx';
 import Table, { type TableColumn } from '../../common/Table.tsx';
 
 export function Product() {
+    const navigate = useNavigate();
     const [productos, setProducts] = useState<ResponseProductDto[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [productToEdit, setProductToEdit] =
-        useState<ResponseProductDto | null>(null);
 
     // Definir las columnas de la tabla
     const columns: TableColumn<ResponseProductDto>[] = [
@@ -55,32 +53,18 @@ export function Product() {
         }
     };
 
-    const handleEdit = (id: number) => {
-        const product = productos.find((p) => p.id === id);
-        if (product) {
-            setProductToEdit(product);
-            setIsModalOpen(true);
-        }
+    const handleEdit = (id: number | string) => {
+        navigate(`/products-form?id=${id}`);
     };
 
     const handleAddProduct = () => {
-        setProductToEdit(null);
-        setIsModalOpen(true);
+        navigate('/products-form');
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setProductToEdit(null);
-    };
-
-    const handleSuccess = () => {
-        loadProducts();
-    };
-
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: number | string) => {
         if (window.confirm('¿Estás seguro de eliminar este producto?')) {
             try {
-                await productService.delete(id);
+                await productService.delete(Number(id));
                 loadProducts();
             } catch (error) {
                 console.error('Error eliminando producto:', error);
@@ -89,10 +73,10 @@ export function Product() {
     };
 
     return (
-        <div className="register-container">
-            <div className="register-card">
+        <div className="h-full w-full">
+            <div className="h-full flex flex-col">
                 <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold mb-6">Product</h1>
+                    <h1 className="text-2xl font-bold text-slate-800">Products</h1>
                     <button
                         onClick={handleAddProduct}
                         className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
@@ -101,21 +85,17 @@ export function Product() {
                     </button>
                 </div>
 
-                <Table
-                    data={productos}
-                    columns={columns}
-                    emptyMessage="No hay productos disponibles"
-                    getItemId={(product) => product.id}
-                />
+                <div className="flex-1">
+                    <Table
+                        data={productos}
+                        columns={columns}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        emptyMessage="No hay productos disponibles"
+                        getItemId={(product) => product.id}
+                    />
+                </div>
             </div>
-
-            {/* Modal */}
-            <ProductForm
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                onSuccess={handleSuccess}
-                productToEdit={productToEdit}
-            />
         </div>
     );
 }
