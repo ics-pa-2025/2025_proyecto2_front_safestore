@@ -2,7 +2,6 @@
 
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import {productService} from '../../../services/product.service.ts';
 import Table from '../../common/Table.tsx';
 import type {ResponseSellDto} from "../../../dto/sell/response-sell.dto.ts";
 import {sellService} from "../../../services/sell.service.ts";
@@ -25,23 +24,8 @@ export function Sell() {
         }
     };
 
-    const handleEdit = (id: number | string) => {
-        navigate(`/product-form?id=${id}`);
-    };
-
     const handleAddProduct = () => {
-        navigate('/product-form');
-    };
-
-    const handleDelete = async (id: number | string) => {
-        if (window.confirm('¿Estás seguro de eliminar este producto?')) {
-            try {
-                await productService.delete(Number(id));
-                loadProducts();
-            } catch (error) {
-                console.error('Error eliminando producto:', error);
-            }
-        }
+        navigate('/sell-form');
     };
 
     return (
@@ -60,8 +44,6 @@ export function Sell() {
                         <Table
                                 data={sell}
                                 columns={columnSell}
-                                onEdit={handleEdit}
-                                onDelete={handleDelete}
                                 emptyMessage="No hay productos disponibles"
                                 getItemId={(product) => product.id}
                         />

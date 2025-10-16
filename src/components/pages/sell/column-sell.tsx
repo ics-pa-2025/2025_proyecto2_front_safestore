@@ -21,12 +21,10 @@ export const columnSell: TableColumn<ResponseSellDto>[] = [
         key: 'idVendedor',
         header: 'Vendedor (id)',
         align: 'right',
-        // render: (product) => `$${product.price.toFixed(2)}`
     },
     {
         key: 'idComprador',
         header: 'Comprador (id)',
         align: 'right',
-        // render: (product) => `$${product.price.toFixed(2)}`
     }
 ];
