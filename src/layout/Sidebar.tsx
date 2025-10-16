@@ -25,6 +25,10 @@ export default function Sidebar() {
                         <BarChart3 className={sidebarStyles.iconClass} />
                         <p className={sidebarStyles.iconClass}>Dashboard</p>
                     </a>
+                    <a className={sidebarStyles.linkClass} href="/sell">
+                        <BarChart3 className={sidebarStyles.iconClass}/>
+                        <p className={sidebarStyles.iconClass}>Sell</p>
+                    </a>
                     <a className={sidebarStyles.linkClass} href="/users">
                         <Users className={sidebarStyles.iconClass} />
                         <p className={sidebarStyles.iconClass}>Users</p>
@@ -39,7 +43,7 @@ export default function Sidebar() {
                     </a>
                     <a className={sidebarStyles.linkClass} href="/lines">
                         <Layers className={sidebarStyles.iconClass} />
-                        <p className={sidebarStyles.iconClass}>Lines</p>   
+                        <p className={sidebarStyles.iconClass}>Lines</p>
                     </a>
                     <a className={sidebarStyles.linkClass} href="/suppliers">
                         <Truck className={sidebarStyles.iconClass} />
@@ -52,16 +56,16 @@ export default function Sidebar() {
                 </div>
             </nav>
 
-            <div className={sidebarStyles.logoutContainerClass}>
-                <button
-                    onClick={handleLogout}
-                    type="button"
-                    className={sidebarStyles.logoutBtnClass}
-                >
-                    <LogOut className={sidebarStyles.iconClass} />
-                    Logout
-                </button>
-            </div>
-        </aside>
+                <div className={sidebarStyles.logoutContainerClass}>
+                    <button
+                            onClick={handleLogout}
+                            type="button"
+                            className={sidebarStyles.logoutBtnClass}
+                    >
+                        <LogOut className={sidebarStyles.iconClass}/>
+                        Logout
+                    </button>
+                </div>
+            </aside>
     );
 }
