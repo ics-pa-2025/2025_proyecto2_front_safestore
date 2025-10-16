@@ -18,6 +18,8 @@ import {Suppliers} from './components/pages/suppliers/suppliers.tsx';
 import {SupplierForm} from './components/pages/suppliers/supplier-form.tsx';
 import {Sell} from "./components/pages/sell/sell.tsx";
 import {SellForm} from "./components/pages/sell/sell-form.tsx";
+import {Lines} from "./components/pages/lines/lines.tsx";
+import {LineForm} from "./components/pages/lines/line-form.tsx";
 
 function App() {
     return (
@@ -47,7 +49,8 @@ function App() {
                         <Route path="user-form" element={<UserForm/>}/>
                         <Route path="sell" element={<Sell/>}/>
                         <Route path="sell-form" element={<SellForm/>}/>
-
+                        <Route path="lines" element={<Lines/>}/>
+                        <Route path="line-form" element={<LineForm/>}/>
                     </Route>
 
                     <Route path="*" element={<Navigate to="/" replace/>}/>
