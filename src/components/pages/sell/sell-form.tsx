@@ -84,7 +84,8 @@ export function SellForm() {
                 // Si no existe, agregarlo como nuevo
                 setSellItems([...sellItems, {
                     product: selectedProduct,
-                    cantidad: cantidad
+                    cantidad: cantidad,
+                    tempId: `${selectedProduct.id}-${Date.now()}`
                 }]);
             }
 
@@ -148,7 +149,7 @@ export function SellForm() {
             }));
 
             const requestSellDto = new RequestSellDto(
-                    idComprador || undefined,
+                    idComprador || '',
                     sellDetails
             );
 
