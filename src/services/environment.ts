@@ -1,7 +1,7 @@
 export function getApiUrl(): string {
-  return import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  return import.meta.env.VITE_API_URL || 'http://104.236.125.252:3000';
 }
 
 export function getAuthApiUrl(): string {
-  return import.meta.env.VITE_AUTH_API_URL || 'http://localhost:3001';
+  return import.meta.env.VITE_AUTH_API_URL || 'http://104.236.125.252:3001';
 }
