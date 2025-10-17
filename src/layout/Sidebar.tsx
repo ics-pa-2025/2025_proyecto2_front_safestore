@@ -49,6 +49,10 @@ export default function Sidebar() {
                         <Truck className={sidebarStyles.iconClass} />
                         <p className={sidebarStyles.iconClass}>Suppliers</p>   
                     </a>
+                    <a className={sidebarStyles.linkClass} href="/customers">
+                        <Users className={sidebarStyles.iconClass} />
+                        <p className={sidebarStyles.iconClass}>Customers</p>   
+                    </a>
                     <a className={sidebarStyles.linkClass} href="/profile">
                         <User className={sidebarStyles.iconClass} />
                         <p className={sidebarStyles.iconClass}>Profile</p>
