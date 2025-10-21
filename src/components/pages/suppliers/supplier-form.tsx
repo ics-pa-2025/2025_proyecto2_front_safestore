@@ -53,7 +53,7 @@ export function SupplierForm() {
                 });
             }
         } catch (error) {
-            console.error('Error cargando proveedor:', error);
+            console.error('Error loading supplier:', error);
         } finally {
             setLoading(false);
         }
@@ -63,21 +63,21 @@ export function SupplierForm() {
         const newErrors: Record<string, string> = {};
 
         if (!formData.name.trim()) {
-            newErrors.name = 'El nombre es requerido';
+            newErrors.name = 'Name is required';
         } else if (formData.name.length < 2) {
-            newErrors.name = 'El nombre debe tener al menos 2 caracteres';
+            newErrors.name = 'Name must be at least 2 characters';
         }
 
         if (!formData.email.trim()) {
-            newErrors.email = 'El email es requerido';
+            newErrors.email = 'Email is required';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'El email no es válido';
+            newErrors.email = 'Email is not valid';
         }
 
         if (!formData.phone.trim()) {
-            newErrors.phone = 'El teléfono es requerido';
+            newErrors.phone = 'Phone is required';
         } else if (formData.phone.length < 8) {
-            newErrors.phone = 'El teléfono debe tener al menos 8 caracteres';
+            newErrors.phone = 'Phone must be at least 8 characters';
         }
 
         setErrors(newErrors);
@@ -127,22 +127,22 @@ export function SupplierForm() {
             }
             
             if (isFromSelector && returnPath) {
-                // Si viene de un selector, regresar al formulario original
+                // If coming from a selector, return to original form
                 navigate(returnPath);
             } else {
-                // Navegación normal
+                // Normal navigation
                 navigate('/suppliers');
             }
         } catch (error) {
-            console.error('Error guardando proveedor:', error);
+            console.error('Error saving supplier:', error);
             
-            let errorMessage = 'Error al guardar el proveedor. Por favor intente nuevamente.';
+            let errorMessage = 'Error saving supplier. Please try again.';
             
             if (error instanceof Error) {
                 if (error.message.includes('email')) {
-                    errorMessage = 'Ya existe un proveedor con este email.';
+                    errorMessage = 'A supplier with this email already exists.';
                 } else if (error.message.includes('name')) {
-                    errorMessage = 'Ya existe un proveedor con este nombre.';
+                    errorMessage = 'A supplier with this name already exists.';
                 }
             }
             
@@ -154,12 +154,12 @@ export function SupplierForm() {
 
     const handleCancel = () => {
         if (isFromSelector && returnPath) {
-            // Si viene de un selector, regresar al formulario original sin crear
+            // If coming from a selector, return to original form without creating
             localStorage.removeItem('returnFromEntityCreation');
             localStorage.removeItem('returnPath');
             navigate(returnPath);
         } else {
-            // Navegación normal
+            // Normal navigation
             navigate('/suppliers');
         }
     };
@@ -169,7 +169,7 @@ export function SupplierForm() {
             <div className={formStyles.loadingContainer}>
                 <div className={formStyles.loadingContent}>
                     <div className={formStyles.loadingSpinner}></div>
-                    <p className={formStyles.loadingText}>Cargando proveedor...</p>
+                    <p className={formStyles.loadingText}>Loading supplier...</p>
                 </div>
             </div>
         );
@@ -180,7 +180,7 @@ export function SupplierForm() {
             <div className={formStyles.pageContainer}>
                 <div className={formStyles.header}>
                     <h1 className={formStyles.title}>
-                        {isEditing ? 'Editar Proveedor' : 'Nuevo Proveedor'}
+                        {isEditing ? 'Edit Supplier' : 'New Supplier'}
                     </h1>
                     <div className={formStyles.buttonContainer}>
                         <button
@@ -188,7 +188,7 @@ export function SupplierForm() {
                             onClick={handleCancel}
                             className={formStyles.cancelButton}
                         >
-                            Cancelar
+                            Cancel
                         </button>
                         <button
                             type="submit"
@@ -208,10 +208,10 @@ export function SupplierForm() {
                         className={formStyles.form}
                     >
                         <div className={formStyles.fieldGrid}>
-                            {/* Nombre */}
+                            {/* Name */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="name" className={formStyles.label}>
-                                    Nombre <span className={formStyles.required}>*</span>
+                                    Name <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -220,7 +220,7 @@ export function SupplierForm() {
                                     value={formData.name}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Ingrese el nombre del proveedor"
+                                    placeholder="Enter supplier name"
                                 />
                                 {errors.name && (
                                     <p className={formStyles.errorMessage}>{errors.name}</p>
@@ -239,17 +239,17 @@ export function SupplierForm() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Ingrese el email del proveedor"
+                                    placeholder="Enter supplier email"
                                 />
                                 {errors.email && (
                                     <p className={formStyles.errorMessage}>{errors.email}</p>
                                 )}
                             </div>
 
-                            {/* Teléfono */}
+                            {/* Phone */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="phone" className={formStyles.label}>
-                                    Teléfono <span className={formStyles.required}>*</span>
+                                    Phone <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="tel"
@@ -258,17 +258,17 @@ export function SupplierForm() {
                                     value={formData.phone}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Ingrese el teléfono del proveedor"
+                                    placeholder="Enter supplier phone"
                                 />
                                 {errors.phone && (
                                     <p className={formStyles.errorMessage}>{errors.phone}</p>
                                 )}
                             </div>
 
-                            {/* Estado */}
+                            {/* Status */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="isActive" className={formStyles.label}>
-                                    Estado
+                                    Status
                                 </label>
                                 <select
                                     id="isActive"
@@ -284,8 +284,8 @@ export function SupplierForm() {
                                     } as any)}
                                     className={formStyles.select}
                                 >
-                                    <option value="true">Activo</option>
-                                    <option value="false">Inactivo</option>
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive</option>
                                 </select>
                             </div>
                         </div>

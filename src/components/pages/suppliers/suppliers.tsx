@@ -14,7 +14,7 @@ export function Suppliers() {
     const columns: TableColumn<ResponseSupplierDto>[] = [
         {
             key: 'name',
-            header: 'Nombre',
+            header: 'Name',
             align: 'left'
         },
         {
@@ -24,12 +24,12 @@ export function Suppliers() {
         },
         {
             key: 'phone',
-            header: 'Teléfono',
+            header: 'Phone',
             align: 'left'
         },
         {
             key: 'isActive',
-            header: 'Estado',
+            header: 'Status',
             align: 'center',
             render: (supplier) => (
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -37,7 +37,7 @@ export function Suppliers() {
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-red-100 text-red-800'
                 }`}>
-                    {supplier.isActive ? 'Activo' : 'Inactivo'}
+                    {supplier.isActive ? 'Active' : 'Inactive'}
                 </span>
             )
         }
@@ -52,7 +52,7 @@ export function Suppliers() {
             const data = await supplierService.get();
             setSuppliers(data);
         } catch (error) {
-            console.error('Error cargando proveedores:', error);
+            console.error('Error loading suppliers:', error);
         }
     };
 
@@ -65,12 +65,12 @@ export function Suppliers() {
     };
 
     const handleDelete = async (id: number | string) => {
-        if (window.confirm('¿Estás seguro de eliminar este proveedor?')) {
+        if (window.confirm('Are you sure you want to delete this supplier?')) {
             try {
                 await supplierService.delete(Number(id));
                 loadSuppliers();
             } catch (error) {
-                console.error('Error eliminando proveedor:', error);
+                console.error('Error deleting supplier:', error);
             }
         }
     };
@@ -94,7 +94,7 @@ export function Suppliers() {
                         columns={columns}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
-                        emptyMessage="No hay proveedores disponibles"
+                        emptyMessage="No suppliers available"
                         getItemId={(supplier) => supplier.id}
                     />
                 </div>

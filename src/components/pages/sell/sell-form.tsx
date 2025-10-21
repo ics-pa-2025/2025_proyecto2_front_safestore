@@ -247,8 +247,8 @@ export function SellForm() {
                                                 <div className="text-sm text-blue-800">
                                                     <div className="font-medium">{product.name}</div>
                                                     <div className="flex justify-between mt-1">
-                                                        <span>Precio: ${product.price.toFixed(2)}</span>
-                                                        <span>Stock disponible: {product.stock}</span>
+                                                        <span>Price: ${product.price.toFixed(2)}</span>
+                                                        <span>Available stock: {product.stock}</span>
                                                     </div>
                                                 </div>
                                             )}
@@ -298,11 +298,10 @@ export function SellForm() {
                                             <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                                                 <thead className="bg-gray-50">
                                                 <tr>
-                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
-                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio
-                                                        Unit.
+                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price
                                                     </th>
-                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
+                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
                                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subtotal</th>
                                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
                                                 </tr>

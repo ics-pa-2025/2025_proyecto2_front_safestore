@@ -57,7 +57,7 @@ export function EntitySelector<T extends EntitySelectorOption>({
     const [isCreating, setIsCreating] = useState(false);
     
     const filteredOptions = filterFn ? options.filter(filterFn) : options;
-    const defaultEmptyText = emptyOptionText || `Seleccionar ${entityName}`;
+    const defaultEmptyText = emptyOptionText || `Select ${entityName}`;
     
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedValue = e.target.value;
@@ -126,7 +126,7 @@ export function EntitySelector<T extends EntitySelectorOption>({
                         <>
                             <option disabled>────────────</option>
                             <option value="create-new">
-                                ➕ Crear nueva {entityName}
+                                ➕ Create new {entityName}
                             </option>
                         </>
                     )}
@@ -138,7 +138,7 @@ export function EntitySelector<T extends EntitySelectorOption>({
                         onClick={handleCreateNew}
                         disabled={isCreating}
                         className="absolute right-2 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 text-sm font-medium bg-transparent border-none cursor-pointer disabled:opacity-50"
-                        title={`Crear nueva ${entityName}`}
+                        title={`Create new ${entityName}`}
                     >
                         ➕
                     </button>
@@ -151,26 +151,26 @@ export function EntitySelector<T extends EntitySelectorOption>({
             
             {isCreating && (
                 <p className="mt-1 text-xs text-blue-600">
-                    Creando nueva {entityName}...
+                    Creating new {entityName}...
                 </p>
             )}
             
             {filteredOptions.length === 0 && !isCreating && (
                 <p className="mt-1 text-xs text-amber-600">
-                    No hay {entityNamePlural} disponibles. 
+                    No {entityNamePlural} available. 
                     {allowCreate && (
                         <button
                             type="button"
                             onClick={handleCreateNew}
                             className="ml-1 text-blue-600 hover:text-blue-800 underline"
                         >
-                            Crear la primera {entityName}
+                            Create the first {entityName}
                         </button>
                     )}
                 </p>
             )}
             
-            {/* Tarjeta de detalles del elemento seleccionado */}
+            {/* Detail card for selected item */}
             {showDetailCard && value > 0 && detailCardContent && (
                 <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md">
                     {(() => {

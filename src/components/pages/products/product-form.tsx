@@ -253,10 +253,10 @@ export function ProductForm() {
                 <div className={formStyles.formContainer}>
                     <form id="product-form" onSubmit={handleSubmit} className={formStyles.form}>
                         <div className={formStyles.fieldGrid}>
-                            {/* Nombre */}
+                            {/* Name */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="name" className={formStyles.label}>
-                                    Nombre <span className={formStyles.required}>*</span>
+                                    Name <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -272,7 +272,7 @@ export function ProductForm() {
                                 )}
                             </div>
 
-                            {/* Marca */}
+                            {/* Brand */}
                             <EntitySelector
                                 options={brands}
                                 value={formData.brandId}
@@ -296,10 +296,10 @@ export function ProductForm() {
                                 filterFn={(option: any) => option.isActive !== false}
                             />
 
-                            {/* Precio */}
+                            {/* Price */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="price" className={formStyles.label}>
-                                    Precio <span className={formStyles.required}>*</span>
+                                    Price <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="number"
@@ -317,7 +317,7 @@ export function ProductForm() {
                                 )}
                             </div>
 
-                            {/* Línea */}
+                            {/* Line */}
                             <EntitySelector
                                 options={lines}
                                 value={formData.lineId}
@@ -361,7 +361,7 @@ export function ProductForm() {
                                 )}
                             </div>
 
-                            {/* Descripción */}
+                            {/* Description */}
                             <div className={formStyles.fullWidthField}>
                                 <label htmlFor="description" className={formStyles.label}>
                                     Descripción
