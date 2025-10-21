@@ -26,9 +26,9 @@ const SellPerDay: React.FC = () => {
     if (!sellPerDay || !Array.isArray(sellPerDay) || sellPerDay.length === 0) {
         return (
             <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold mb-4 text-gray-800">Ventas por Día</h2>
+                <h2 className="text-xl font-bold mb-4 text-gray-800">Sales Per Day</h2>
                 <div className="flex items-center justify-center h-[300px] text-gray-500">
-                    No hay datos disponibles
+                    No data available
                 </div>
             </div>
         );
@@ -68,12 +68,12 @@ const SellPerDay: React.FC = () => {
                 rotateAlways: false,
             },
             title: {
-                text: 'Fecha'
+                text: 'Date'
             }
         },
         yaxis: {
             title: {
-                text: 'Total de Ventas'
+                text: 'Total Sales'
             }
         },
         grid: {
@@ -95,13 +95,13 @@ const SellPerDay: React.FC = () => {
     };
 
     const series = [{
-        name: 'Ventas',
+        name: 'Sales',
         data: seriesData
     }];
 
     return (
         <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Ventas por Día</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Sales Per Day</h2>
             <Chart 
                 options={chartOptions} 
                 series={series} 

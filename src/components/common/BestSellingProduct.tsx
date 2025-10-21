@@ -27,9 +27,9 @@ const BestSellingProduct: React.FC = () => {
     if (!bestSellingProduct || !Array.isArray(bestSellingProduct) || bestSellingProduct.length === 0) {
         return (
             <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-bold mb-4 text-gray-800">Productos Más Vendidos</h2>
+                <h2 className="text-xl font-bold mb-4 text-gray-800">Best Selling Products</h2>
                 <div className="flex items-center justify-center h-[350px] text-gray-500">
-                    No hay datos disponibles
+                    No data available
                 </div>
             </div>
         );
@@ -75,12 +75,12 @@ const BestSellingProduct: React.FC = () => {
                 }
             },
             title: {
-                text: 'Productos'
+                text: 'Products'
             }
         },
         yaxis: {
             title: {
-                text: 'Unidades Vendidas'
+                text: 'Units Sold'
             }
         },
         grid: {
@@ -90,7 +90,7 @@ const BestSellingProduct: React.FC = () => {
         tooltip: {
             theme: 'light',
             y: {
-                formatter: (val) => `${val} unidades`
+                formatter: (val) => `${val} units`
             }
         },
         legend: {
@@ -99,13 +99,13 @@ const BestSellingProduct: React.FC = () => {
     };
 
     const series = [{
-        name: 'Unidades Vendidas',
+        name: 'Units Sold',
         data: seriesData
     }];
 
     return (
         <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Productos Más Vendidos</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Best Selling Products</h2>
             <Chart 
                 options={chartOptions} 
                 series={series} 
