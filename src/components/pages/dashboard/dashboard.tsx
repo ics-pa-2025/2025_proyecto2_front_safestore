@@ -1,13 +1,21 @@
 "use client"
 
+import SellPerDay from "../../common/SellPerDay";
+import BestSellingProduct from "../../common/BestSellingProduct";
+
 export function Dashboard() {
 
     return (
-        <div className="register-container">
-            <div className="register-card">
-
-                <h1>Dashboard</h1>
-            </div>
+        <div className="p-6">
+            <h1 className="text-3xl font-bold mb-6 text-gray-800">Dashboard</h1>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="col-span-1">
+                        <SellPerDay/>
+                    </div>
+                    <div className="col-span-1">
+                        <BestSellingProduct/>
+                    </div>
+                </div>
         </div>
     )
 }
