@@ -1,4 +1,4 @@
-// Clases reutilizables para formularios
+// Reusable classes for forms
 export const formStyles = {
   // Contenedores principales
   pageContainer: "h-full flex flex-col",
@@ -33,7 +33,7 @@ export const formStyles = {
   // Estados especiales
   disabledInput: "w-full p-1 sm:p-2 text-sm sm:text-base border border-slate-300 rounded-md bg-slate-50 text-slate-500 cursor-not-allowed",
   
-  // Mensajes de error
+  // Error messages
   errorMessage: "mt-1 text-xs sm:text-sm text-red-600",
   
   // Loading state

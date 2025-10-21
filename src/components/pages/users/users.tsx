@@ -61,7 +61,7 @@ export function Users() {
             const data = await userService.get();
             setUsers(data);
         } catch (error) {
-            console.error('Error cargando usuarios:', error);
+            console.error('Error loading users:', error);
         }
     };
 
@@ -70,7 +70,7 @@ export function Users() {
             const data = await rolesService.get();
             setRoles(data);
         } catch (error) {
-            console.error('Error cargando roles:', error);
+            console.error('Error loading roles:', error);
         }
     };
 
@@ -88,12 +88,12 @@ export function Users() {
     };
 
     const handleDelete = async (id: number | string) => {
-        if (window.confirm('¿Estás seguro de eliminar este usuario?')) {
+        if (window.confirm('Are you sure you want to delete this user?')) {
             try {
                 await userService.delete(String(id));
                 loadUsers();
             } catch (error) {
-                console.error('Error eliminando usuario:', error);
+                console.error('Error deleting user:', error);
             }
         }
     };
@@ -117,7 +117,7 @@ export function Users() {
                         columns={columns}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
-                        emptyMessage="No hay usuarios disponibles"
+                        emptyMessage="No users available"
                         getItemId={(user) => user.id}
                     />
                 </div>

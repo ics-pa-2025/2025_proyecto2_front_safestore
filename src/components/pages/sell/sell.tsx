@@ -20,7 +20,7 @@ export function Sell() {
             const data = await sellService.get();
             setSell(data);
         } catch (error) {
-            console.error('Error cargando productos:', error);
+            console.error('Error loading products:', error);
         }
     };
 
@@ -32,19 +32,19 @@ export function Sell() {
             <div>
                 <div className="h-full flex flex-col">
                     <div className="flex justify-between items-center mb-6">
-                        <h1 className="text-2xl font-bold text-slate-800">Ventas</h1>
+                        <h1 className="text-2xl font-bold text-slate-800">Sales</h1>
                         <button
                                 onClick={handleAddProduct}
                                 className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
                         >
-                            Agregar venta
+                            Add Sale
                         </button>
                     </div>
                     <div className="flex-1">
                         <Table
                                 data={sell}
                                 columns={columnSell}
-                                emptyMessage="No hay productos disponibles"
+                                emptyMessage="No products available"
                                 getItemId={(product) => product.id}
                         />
                     </div>

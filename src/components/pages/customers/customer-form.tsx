@@ -55,7 +55,7 @@ export function CustomerForm() {
                 });
             }
         } catch (error) {
-            console.error('Error cargando cliente:', error);
+            console.error('Error loading customer:', error);
         } finally {
             setLoading(false);
         }
@@ -65,43 +65,43 @@ export function CustomerForm() {
         const newErrors: Record<string, string> = {};
 
         if (!formData.name.trim()) {
-            newErrors.name = 'El nombre es requerido';
+            newErrors.name = 'Name is required';
         } else if (formData.name.length < 2) {
-            newErrors.name = 'El nombre debe tener al menos 2 caracteres';
+            newErrors.name = 'Name must be at least 2 characters';
         }
 
         if (!formData.lastName.trim()) {
-            newErrors.lastName = 'El apellido es requerido';
+            newErrors.lastName = 'Last name is required';
         } else if (formData.lastName.length < 2) {
-            newErrors.lastName = 'El apellido debe tener al menos 2 caracteres';
+            newErrors.lastName = 'Last name must be at least 2 characters';
         }
 
         if (!formData.email.trim()) {
-            newErrors.email = 'El email es requerido';
+            newErrors.email = 'Email is required';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'El email no es válido';
+            newErrors.email = 'Email is not valid';
         }
 
         if (!formData.address.trim()) {
-            newErrors.address = 'La dirección es requerida';
+            newErrors.address = 'Address is required';
         } else if (formData.address.length < 5) {
-            newErrors.address = 'La dirección debe tener al menos 5 caracteres';
+            newErrors.address = 'Address must be at least 5 characters';
         }
 
         if (!formData.phone.trim()) {
-            newErrors.phone = 'El teléfono es requerido';
+            newErrors.phone = 'Phone is required';
         } else if (formData.phone.length < 8) {
-            newErrors.phone = 'El teléfono debe tener al menos 8 caracteres';
+            newErrors.phone = 'Phone must be at least 8 characters';
         }
 
         if (!formData.documento.trim()) {
-            newErrors.documento = 'El documento es requerido';
+            newErrors.documento = 'Document is required';
         } else if (!/^\d{8}$/.test(formData.documento)) {
-            newErrors.documento = 'El documento debe tener exactamente 8 dígitos';
+            newErrors.documento = 'Document must have exactly 8 digits';
         } else {
             const doc = parseInt(formData.documento);
             if (doc < 10000000 || doc > 99999999) {
-                newErrors.documento = 'El documento debe estar entre 10000000 y 99999999';
+                newErrors.documento = 'Document must be between 10000000 and 99999999';
             }
         }
 
@@ -153,15 +153,15 @@ export function CustomerForm() {
             }
             navigate('/customers');
         } catch (error) {
-            console.error('Error guardando cliente:', error);
+            console.error('Error saving customer:', error);
             
-            let errorMessage = 'Error al guardar el cliente. Por favor intente nuevamente.';
+            let errorMessage = 'Error saving customer. Please try again.';
             
             if (error instanceof Error) {
                 if (error.message.includes('email')) {
-                    errorMessage = 'Ya existe un cliente con este email.';
+                    errorMessage = 'A customer with this email already exists.';
                 } else if (error.message.includes('documento')) {
-                    errorMessage = 'Ya existe un cliente con este documento.';
+                    errorMessage = 'A customer with this document already exists.';
                 }
             }
             
@@ -180,7 +180,7 @@ export function CustomerForm() {
             <div className={formStyles.loadingContainer}>
                 <div className={formStyles.loadingContent}>
                     <div className={formStyles.loadingSpinner}></div>
-                    <p className={formStyles.loadingText}>Cargando cliente...</p>
+                    <p className={formStyles.loadingText}>Loading customer...</p>
                 </div>
             </div>
         );
@@ -191,7 +191,7 @@ export function CustomerForm() {
             <div className={formStyles.pageContainer}>
                 <div className={formStyles.header}>
                     <h1 className={formStyles.title}>
-                        {isEditing ? 'Editar Cliente' : 'Nuevo Cliente'}
+                        {isEditing ? 'Edit Customer' : 'New Customer'}
                     </h1>
                     <div className={formStyles.buttonContainer}>
                         <button
@@ -199,7 +199,7 @@ export function CustomerForm() {
                             onClick={handleCancel}
                             className={formStyles.cancelButton}
                         >
-                            Cancelar
+                            Cancel
                         </button>
                         <button
                             type="submit"
@@ -207,7 +207,7 @@ export function CustomerForm() {
                             disabled={loading}
                             className={formStyles.submitButton}
                         >
-                            {loading ? 'Guardando...' : 'Guardar'}
+                            {loading ? 'Saving...' : 'Save'}
                         </button>
                     </div>
                 </div>
@@ -219,10 +219,10 @@ export function CustomerForm() {
                         className={formStyles.form}
                     >
                         <div className={formStyles.fieldGrid}>
-                            {/* Nombre */}
+                            {/* Name */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="name" className={formStyles.label}>
-                                    Nombre <span className={formStyles.required}>*</span>
+                                    Name <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -231,17 +231,17 @@ export function CustomerForm() {
                                     value={formData.name}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Ingrese el nombre del cliente"
+                                    placeholder="Enter customer name"
                                 />
                                 {errors.name && (
                                     <p className={formStyles.errorMessage}>{errors.name}</p>
                                 )}
                             </div>
 
-                            {/* Apellido */}
+                            {/* Last Name */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="lastName" className={formStyles.label}>
-                                    Apellido <span className={formStyles.required}>*</span>
+                                    Last Name <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -250,7 +250,7 @@ export function CustomerForm() {
                                     value={formData.lastName}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Ingrese el apellido del cliente"
+                                    placeholder="Enter customer last name"
                                 />
                                 {errors.lastName && (
                                     <p className={formStyles.errorMessage}>{errors.lastName}</p>
@@ -269,17 +269,17 @@ export function CustomerForm() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Ingrese el email del cliente"
+                                    placeholder="Enter customer email"
                                 />
                                 {errors.email && (
                                     <p className={formStyles.errorMessage}>{errors.email}</p>
                                 )}
                             </div>
 
-                            {/* Teléfono */}
+                            {/* Phone */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="phone" className={formStyles.label}>
-                                    Teléfono <span className={formStyles.required}>*</span>
+                                    Phone <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="tel"
@@ -288,17 +288,17 @@ export function CustomerForm() {
                                     value={formData.phone}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Ingrese el teléfono del cliente"
+                                    placeholder="Enter customer phone"
                                 />
                                 {errors.phone && (
                                     <p className={formStyles.errorMessage}>{errors.phone}</p>
                                 )}
                             </div>
 
-                            {/* Documento */}
+                            {/* Document */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="documento" className={formStyles.label}>
-                                    Documento <span className={formStyles.required}>*</span>
+                                    Document <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -307,7 +307,7 @@ export function CustomerForm() {
                                     value={formData.documento}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Ingrese el documento del cliente (8 dígitos)"
+                                    placeholder="Enter customer document (8 digits)"
                                     maxLength={8}
                                 />
                                 {errors.documento && (
@@ -315,10 +315,10 @@ export function CustomerForm() {
                                 )}
                             </div>
 
-                            {/* Dirección */}
+                            {/* Address */}
                             <div className={`${formStyles.fieldWrapper} ${formStyles.fullWidthField}`}>
                                 <label htmlFor="address" className={formStyles.label}>
-                                    Dirección <span className={formStyles.required}>*</span>
+                                    Address <span className={formStyles.required}>*</span>
                                 </label>
                                 <textarea
                                     id="address"
@@ -326,7 +326,7 @@ export function CustomerForm() {
                                     value={formData.address}
                                     onChange={handleChange}
                                     className={formStyles.textarea}
-                                    placeholder="Ingrese la dirección del cliente"
+                                    placeholder="Enter customer address"
                                     rows={3}
                                 />
                                 {errors.address && (

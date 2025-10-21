@@ -14,12 +14,12 @@ export function Customers() {
     const columns: TableColumn<ResponseCustomerDto>[] = [
         {
             key: 'name',
-            header: 'Nombre',
+            header: 'Name',
             align: 'left'
         },
         {
             key: 'lastName',
-            header: 'Apellido',
+            header: 'Last Name',
             align: 'left'
         },
         {
@@ -29,17 +29,17 @@ export function Customers() {
         },
         {
             key: 'phone',
-            header: 'Teléfono',
+            header: 'Phone',
             align: 'left'
         },
         {
             key: 'documento',
-            header: 'Documento',
+            header: 'Document',
             align: 'center'
         },
         {
             key: 'address',
-            header: 'Dirección',
+            header: 'Address',
             align: 'left'
         }
     ];
@@ -53,7 +53,7 @@ export function Customers() {
             const data = await customerService.get();
             setCustomers(data);
         } catch (error) {
-            console.error('Error cargando clientes:', error);
+            console.error('Error loading customers:', error);
         }
     };
 
@@ -66,12 +66,12 @@ export function Customers() {
     };
 
     const handleDelete = async (id: number | string) => {
-        if (window.confirm('¿Estás seguro de eliminar este cliente?')) {
+        if (window.confirm('Are you sure you want to delete this customer?')) {
             try {
                 await customerService.delete(Number(id));
                 loadCustomers();
             } catch (error) {
-                console.error('Error eliminando cliente:', error);
+                console.error('Error deleting customer:', error);
             }
         }
     };
@@ -95,7 +95,7 @@ export function Customers() {
                         columns={columns}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
-                        emptyMessage="No hay clientes disponibles"
+                        emptyMessage="No customers available"
                         getItemId={(customer) => customer.id}
                     />
                 </div>
