@@ -60,7 +60,7 @@ export function ProductForm() {
                 });
             }
         } catch (error) {
-            console.error('Error cargando producto:', error);
+            console.error('Error loading product:', error);
         } finally {
             setLoading(false);
         }
@@ -71,7 +71,7 @@ export function ProductForm() {
             const data = await brandsService.get();
             setBrands(data);
         } catch (error) {
-            console.error('Error cargando marcas:', error);
+            console.error('Error loading brands:', error);
         }
     };
 
@@ -80,11 +80,11 @@ export function ProductForm() {
             const data = await lineService.get();
             setLines(data);
         } catch (error) {
-            console.error('Error cargando líneas:', error);
+            console.error('Error loading lines:', error);
         }
     };
 
-    // Funciones para recargar datos después de crear nuevas entidades
+    // Functions to reload data after creating new entities
     const handleReloadBrands = async () => {
         await reloadData(brandsService.get, setBrands);
     };
@@ -109,23 +109,23 @@ export function ProductForm() {
         const newErrors: Record<string, string> = {};
 
         if (!formData.name.trim()) {
-            newErrors.name = 'El nombre es requerido';
+            newErrors.name = 'Name is required';
         }
 
         if (formData.price <= 0) {
-            newErrors.price = 'El precio debe ser mayor a 0';
+            newErrors.price = 'Price must be greater than 0';
         }
 
         if (formData.stock < 0) {
-            newErrors.stock = 'El stock no puede ser negativo';
+            newErrors.stock = 'Stock cannot be negative';
         }
 
         if (!formData.brandId || formData.brandId === 0) {
-            newErrors.brandId = 'Debe seleccionar una marca';
+            newErrors.brandId = 'Must select a brand';
         }
 
         if (!formData.lineId || formData.lineId === 0) {
-            newErrors.lineId = 'Debe seleccionar una línea';
+            newErrors.lineId = 'Must select a line';
         }
 
         setErrors(newErrors);
@@ -149,7 +149,7 @@ export function ProductForm() {
                     : value,
         }));
 
-        // Limpiar error del campo cuando el usuario empieza a escribir
+        // Clear field error when user starts typing
         if (errors[name]) {
             setErrors((prev) => {
                 const newErrors = { ...prev };
@@ -188,9 +188,9 @@ export function ProductForm() {
                 navigate('/products');
             }
         } catch (error) {
-            console.error('Error guardando producto:', error);
+            console.error('Error saving product:', error);
             alert(
-                'Error al guardar el producto. Por favor intente nuevamente.'
+                'Error saving product. Please try again.'
             );
         } finally {
             setLoading(false);
@@ -203,7 +203,7 @@ export function ProductForm() {
         const currentReturnPath = localStorage.getItem('returnPath');
         
         if (currentIsFromSelector && currentReturnPath) {
-            // Si viene de un selector, regresar al formulario original sin crear
+            // If coming from a selector, return to original form without creating
             localStorage.removeItem('returnFromEntityCreation');
             localStorage.removeItem('returnPath');
             navigate(currentReturnPath);
@@ -229,7 +229,7 @@ export function ProductForm() {
             <div className={formStyles.pageContainer}>
                 <div className={formStyles.header}>
                     <h1 className={formStyles.title}>
-                        {isEditing ? 'Editar Producto' : 'Nuevo Producto'}
+                        {isEditing ? 'Edit Product' : 'New Product'}
                     </h1>
                     <div className={formStyles.buttonContainer}>
                         <button
@@ -237,7 +237,7 @@ export function ProductForm() {
                             onClick={handleCancel}
                             className={formStyles.cancelButton}
                         >
-                            Cancelar
+                            Cancel
                         </button>
                         <button
                             type="submit"
@@ -245,7 +245,7 @@ export function ProductForm() {
                             disabled={loading}
                             className={formStyles.submitButton}
                         >
-                            {loading ? 'Guardando...' : isEditing ? 'Actualizar' : 'Crear'}
+                            {loading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
                         </button>
                     </div>
                 </div>
@@ -264,7 +264,7 @@ export function ProductForm() {
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    placeholder="Nombre del producto"
+                                    placeholder="Product name"
                                     className={formStyles.input}
                                 />
                                 {errors.name && (
@@ -286,10 +286,10 @@ export function ProductForm() {
                                         });
                                     }
                                 }}
-                                entityName="marca"
-                                entityNamePlural="marcas"
+                                entityName="brand"
+                                entityNamePlural="brands"
                                 createRoute="/brands-form"
-                                label="Marca"
+                                label="Brand"
                                 required
                                 error={errors.brandId}
                                 onReload={handleReloadBrands}
@@ -331,10 +331,10 @@ export function ProductForm() {
                                         });
                                     }
                                 }}
-                                entityName="línea"
-                                entityNamePlural="líneas"
+                                entityName="line"
+                                entityNamePlural="lines"
                                 createRoute="/line-form"
-                                label="Línea"
+                                label="Line"
                                 required
                                 error={errors.lineId}
                                 onReload={handleReloadLines}
@@ -371,7 +371,7 @@ export function ProductForm() {
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}
-                                    placeholder="Descripción opcional"
+                                    placeholder="Optional description"
                                     rows={3}
                                     className={formStyles.textarea}
                                 />

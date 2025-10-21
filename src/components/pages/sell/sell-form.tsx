@@ -39,11 +39,11 @@ export function SellForm() {
             const data = await productService.get();
             setProducts(data.filter(p => p.isActive && p.stock > 0));
         } catch (error) {
-            console.error('Error cargando productos:', error);
+            console.error('Error loading products:', error);
         }
     };
 
-    // Función para recargar productos después de crear uno nuevo
+    // Function to reload products after creating a new one
     const handleReloadProducts = async () => {
         await reloadData(() => productService.get().then(data => data.filter(p => p.isActive && p.stock > 0)), setProducts);
     };
@@ -52,7 +52,7 @@ export function SellForm() {
         const newErrors: Record<string, string> = {};
 
         if (!selectedProductId || selectedProductId === 0) {
-            newErrors.product = 'Debe seleccionar un producto';
+            newErrors.product = 'Must select a product';
         }
 
         if (cantidad <= 0) {
@@ -62,7 +62,7 @@ export function SellForm() {
         const selectedProduct = products.find(p => p.id === selectedProductId);
 
         if (selectedProduct && cantidad > selectedProduct.stock) {
-            newErrors.cantidad = `Stock insuficiente. Disponible: ${selectedProduct.stock}`;
+            newErrors.cantidad = `Insufficient stock. Available: ${selectedProduct.stock}`;
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -71,7 +71,7 @@ export function SellForm() {
         }
 
         if (selectedProduct) {
-            // Verificar si el producto ya existe
+            // Check if product already exists
             const existingItemIndex = sellItems.findIndex(item => item.product.id === selectedProductId);
 
             if (existingItemIndex !== -1) {
@@ -79,16 +79,16 @@ export function SellForm() {
                 const updatedItems = [...sellItems];
                 const newCantidad = updatedItems[existingItemIndex].cantidad + cantidad;
 
-                // Verificar que no exceda el stock
+                // Check that it doesn't exceed stock
                 if (newCantidad > selectedProduct.stock) {
-                    setErrors({cantidad: `Stock insuficiente. Disponible: ${selectedProduct.stock}`});
+                    setErrors({cantidad: `Insufficient stock. Available: ${selectedProduct.stock}`});
                     return;
                 }
 
                 updatedItems[existingItemIndex].cantidad = newCantidad;
                 setSellItems(updatedItems);
             } else {
-                // Si no existe, agregarlo como nuevo
+                // If it doesn't exist, add it as new
                 setSellItems([...sellItems, {
                     product: selectedProduct,
                     cantidad: cantidad,
@@ -114,7 +114,7 @@ export function SellForm() {
         }
 
         if (product && newQuantity > product.stock) {
-            alert(`Stock insuficiente. Disponible: ${product.stock}`);
+            alert(`Insufficient stock. Available: ${product.stock}`);
             return;
         }
 
@@ -135,7 +135,7 @@ export function SellForm() {
         const newErrors: Record<string, string> = {};
 
         if (sellItems.length === 0) {
-            newErrors.items = 'Debe agregar al menos un producto a la venta';
+            newErrors.items = 'Must add at least one product to the sale';
         }
 
         setErrors(newErrors);
@@ -163,8 +163,8 @@ export function SellForm() {
             await sellService.create(requestSellDto);
             navigate('/sell');
         } catch (error) {
-            console.error('Error guardando venta:', error);
-            alert('Error al guardar la venta. Por favor intente nuevamente.');
+            console.error('Error saving sale:', error);
+            alert('Error saving sale. Please try again.');
         }
     };
 
@@ -177,7 +177,7 @@ export function SellForm() {
                 <div className={formStyles.pageContainer}>
                     <div className={formStyles.header}>
                         <h1 className={formStyles.title}>
-                            {isEditing ? 'Editar Venta' : 'Nueva Venta'}
+                            {isEditing ? 'Edit Sale' : 'New Sale'}
                         </h1>
                         <div className={formStyles.buttonContainer}>
                             <button
@@ -185,7 +185,7 @@ export function SellForm() {
                                     onClick={handleCancel}
                                     className={formStyles.cancelButton}
                             >
-                                Cancelar
+                                Cancel
                             </button>
                             <button
                                     type="submit"
@@ -193,7 +193,7 @@ export function SellForm() {
                                     className={formStyles.submitButton}
                                     disabled={sellItems.length === 0}
                             >
-                                {isEditing ? 'Actualizar' : 'Crear Venta'}
+                                {isEditing ? 'Update' : 'Create Sale'}
                             </button>
                         </div>
                     </div>
@@ -218,9 +218,9 @@ export function SellForm() {
                                 </div>
                             </div>
 
-                            {/* Sección para agregar productos */}
+                            {/* Section to add products */}
                             <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                <h3 className="text-lg font-semibold text-slate-800 mb-4">Agregar Producto</h3>
+                                <h3 className="text-lg font-semibold text-slate-800 mb-4">Add Product</h3>
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="md:col-span-1">
@@ -231,10 +231,10 @@ export function SellForm() {
                                                 setSelectedProductId(value);
                                                 setErrors({});
                                             }}
-                                            entityName="producto"
-                                            entityNamePlural="productos"
+                                            entityName="product"
+                                            entityNamePlural="products"
                                             createRoute="/product-form"
-                                            label="Producto"
+                                            label="Product"
                                             required
                                             error={errors.product}
                                             onReload={handleReloadProducts}
@@ -257,7 +257,7 @@ export function SellForm() {
 
                                     <div className="md:col-span-1">
                                         <label htmlFor="cantidad" className={formStyles.label}>
-                                            Cantidad <span className={formStyles.required}>*</span>
+                                            Quantity <span className={formStyles.required}>*</span>
                                         </label>
                                         <input
                                                 type="number"
@@ -281,7 +281,7 @@ export function SellForm() {
                                                 onClick={handleAddItem}
                                                 className="w-full bg-green-600 px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
                                         >
-                                            Agregar
+                                            Add
                                         </button>
                                     </div>
                                 </div>
@@ -293,8 +293,7 @@ export function SellForm() {
                             {/* Lista de productos agregados */}
                             {sellItems.length > 0 && (
                                     <div className="mt-6">
-                                        <h3 className="text-lg font-semibold text-slate-800 mb-4">Productos en la
-                                            Venta</h3>
+                                        <h3 className="text-lg font-semibold text-slate-800 mb-4">Products in Sale</h3>
                                         <div className="overflow-x-auto">
                                             <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                                                 <thead className="bg-gray-50">
@@ -332,7 +331,7 @@ export function SellForm() {
                                                                         onClick={() => handleRemoveItem(item.product.id)}
                                                                         className="text-red-600 hover:text-red-800"
                                                                 >
-                                                                    Eliminar
+                                                                    Remove
                                                                 </button>
                                                             </td>
                                                         </tr>

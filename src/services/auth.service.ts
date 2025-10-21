@@ -27,6 +27,17 @@ authApi.interceptors.response.use(
     (response) => response,
     (error) => {
         console.error('Auth API error:', error);
+        
+        // Handle session expiration
+        if (error.response?.status === 401 && window.location.pathname !== '/login') {
+            // Import dynamically to avoid circular dependency
+            import('../hooks/useAuthAlert').then(({ useAuthAlert }) => {
+                const { showSessionExpiredAlert } = useAuthAlert();
+                authService.logout();
+                showSessionExpiredAlert();
+            });
+        }
+        
         return Promise.reject(error);
     }
 );

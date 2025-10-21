@@ -14,18 +14,18 @@ export function Lines() {
     const columns: TableColumn<ResponseLineDto>[] = [
         {
             key: 'name',
-            header: 'Nombre',
+            header: 'Name',
             align: 'left'
         },
         {
             key: 'description',
-            header: 'Descripción',
+            header: 'Description',
             align: 'left',
             render: (line) => line.description || '-'
         },
         {
             key: 'isActive',
-            header: 'Estado',
+            header: 'Status',
             align: 'center',
             render: (line) => (
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -33,7 +33,7 @@ export function Lines() {
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-red-100 text-red-800'
                 }`}>
-                    {line.isActive ? 'Activo' : 'Inactivo'}
+                    {line.isActive ? 'Active' : 'Inactive'}
                 </span>
             )
         }
@@ -48,7 +48,7 @@ export function Lines() {
             const data = await lineService.get();
             setLines(data);
         } catch (error) {
-            console.error('Error cargando líneas:', error);
+            console.error('Error loading lines:', error);
         }
     };
 
@@ -61,12 +61,12 @@ export function Lines() {
     };
 
     const handleDelete = async (id: number | string) => {
-        if (window.confirm('¿Estás seguro de eliminar esta línea?')) {
+        if (window.confirm('Are you sure you want to delete this line?')) {
             try {
                 await lineService.delete(Number(id));
                 loadLines();
             } catch (error) {
-                console.error('Error eliminando línea:', error);
+                console.error('Error deleting line:', error);
             }
         }
     };
@@ -90,7 +90,7 @@ export function Lines() {
                         columns={columns}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
-                        emptyMessage="No hay líneas disponibles"
+                        emptyMessage="No lines available"
                         getItemId={(line) => line.id}
                     />
                 </div>

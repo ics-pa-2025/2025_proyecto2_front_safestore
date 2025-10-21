@@ -21,7 +21,7 @@ export function Brands() {
             const data = await brandsService.get();
             setBrands(data);
         } catch (error) {
-            console.error('Error cargando marcas:', error);
+            console.error('Error loading brands:', error);
         } finally {
             setLoading(false);
         }
@@ -33,13 +33,13 @@ export function Brands() {
 
     const handleDelete = async (id: number) => {
         if (
-            window.confirm('¿Estás seguro de que quieres eliminar esta marca?')
+            window.confirm('Are you sure you want to delete this brand?')
         ) {
             try {
                 await brandsService.delete(id);
                 await loadBrands(); // Reload brands after deletion
             } catch (error) {
-                console.error('Error eliminando marca:', error);
+                console.error('Error deleting brand:', error);
             }
         }
     };
@@ -49,31 +49,31 @@ export function Brands() {
     };
 
     if (loading) {
-        return <div className="text-center py-8">Cargando marcas...</div>;
+        return <div className="text-center py-8">Loading brands...</div>;
     }
 
     return (
         <div >
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Marcas</h1>
+                <h1 className="text-2xl font-bold text-gray-800">Brands</h1>
                 <button
                     onClick={handleAddBrand}
                     className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
                 >
-                    Agregar Marca
+                    Add Brand
                 </button>
             </div>
 
             {brands.length === 0 ? (
                 <div className="text-center py-12">
                     <p className="text-gray-500 text-lg">
-                        No hay marcas registradas.
+                        No brands registered.
                     </p>
                     <button
                         onClick={handleAddBrand}
                         className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors"
                     >
-                        Crear Primera Marca
+                        Create First Brand
                     </button>
                 </div>
             ) : (
