@@ -18,6 +18,10 @@ export function LineForm() {
     const lineId = searchParams.get('id');
     const isEditing = Boolean(lineId);
     
+    // Detectar si viene de un selector
+    const isFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
+    const returnPath = localStorage.getItem('returnPath');
+    
     const [formData, setFormData] = useState<LineFormData>({
         name: '',
         description: '',
@@ -46,7 +50,7 @@ export function LineForm() {
                 });
             }
         } catch (error) {
-            console.error('Error cargando línea:', error);
+            console.error('Error loading line:', error);
         } finally {
             setLoading(false);
         }
@@ -56,15 +60,15 @@ export function LineForm() {
         const newErrors: Record<string, string> = {};
 
         if (!formData.name.trim()) {
-            newErrors.name = 'El nombre es requerido';
+            newErrors.name = 'Name is required';
         } else if (formData.name.length < 2) {
-            newErrors.name = 'El nombre debe tener al menos 2 caracteres';
+            newErrors.name = 'Name must be at least 2 characters';
         } else if (formData.name.length > 100) {
-            newErrors.name = 'El nombre no puede exceder 100 caracteres';
+            newErrors.name = 'Name cannot exceed 100 characters';
         }
 
         if (formData.description && formData.description.length > 500) {
-            newErrors.description = 'La descripción no puede exceder 500 caracteres';
+            newErrors.description = 'Description cannot exceed 500 characters';
         }
 
         setErrors(newErrors);
@@ -111,15 +115,22 @@ export function LineForm() {
             } else {
                 await lineService.create(lineData);
             }
-            navigate('/lines');
-        } catch (error) {
-            console.error('Error guardando línea:', error);
             
-            let errorMessage = 'Error al guardar la línea. Por favor intente nuevamente.';
+            if (isFromSelector && returnPath) {
+                // If coming from a selector, return to original form
+                navigate(returnPath);
+            } else {
+                // Normal navigation
+                navigate('/lines');
+            }
+        } catch (error) {
+            console.error('Error saving line:', error);
+            
+            let errorMessage = 'Error saving line. Please try again.';
             
             if (error instanceof Error) {
                 if (error.message.includes('name')) {
-                    errorMessage = 'Ya existe una línea con este nombre.';
+                    errorMessage = 'A line with this name already exists.';
                 }
             }
             
@@ -130,7 +141,15 @@ export function LineForm() {
     };
 
     const handleCancel = () => {
-        navigate('/lines');
+        if (isFromSelector && returnPath) {
+            // If coming from a selector, return to original form without creating
+            localStorage.removeItem('returnFromEntityCreation');
+            localStorage.removeItem('returnPath');
+            navigate(returnPath);
+        } else {
+            // Normal navigation
+            navigate('/lines');
+        }
     };
 
     if (loading && isEditing) {
@@ -138,7 +157,7 @@ export function LineForm() {
             <div className={formStyles.loadingContainer}>
                 <div className={formStyles.loadingContent}>
                     <div className={formStyles.loadingSpinner}></div>
-                    <p className={formStyles.loadingText}>Cargando línea...</p>
+                    <p className={formStyles.loadingText}>Loading line...</p>
                 </div>
             </div>
         );
@@ -149,7 +168,7 @@ export function LineForm() {
             <div className={formStyles.pageContainer}>
                 <div className={formStyles.header}>
                     <h1 className={formStyles.title}>
-                        {isEditing ? 'Editar Línea' : 'Nueva Línea'}
+                        {isEditing ? 'Edit Line' : 'New Line'}
                     </h1>
                     <div className={formStyles.buttonContainer}>
                         <button
@@ -157,7 +176,7 @@ export function LineForm() {
                             onClick={handleCancel}
                             className={formStyles.cancelButton}
                         >
-                            Cancelar
+                            Cancel
                         </button>
                         <button
                             type="submit"
@@ -165,7 +184,7 @@ export function LineForm() {
                             disabled={loading}
                             className={formStyles.submitButton}
                         >
-                            {loading ? 'Guardando...' : 'Guardar'}
+                            {loading ? 'Saving...' : 'Save'}
                         </button>
                     </div>
                 </div>
@@ -177,10 +196,10 @@ export function LineForm() {
                         className={formStyles.form}
                     >
                         <div className={formStyles.fieldGrid}>
-                            {/* Nombre */}
+                            {/* Name */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="name" className={formStyles.label}>
-                                    Nombre <span className={formStyles.required}>*</span>
+                                    Name <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -189,17 +208,17 @@ export function LineForm() {
                                     value={formData.name}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Ingrese el nombre de la línea"
+                                    placeholder="Enter line name"
                                 />
                                 {errors.name && (
                                     <p className={formStyles.errorMessage}>{errors.name}</p>
                                 )}
                             </div>
 
-                            {/* Estado */}
+                            {/* Status */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="isActive" className={formStyles.label}>
-                                    Estado
+                                    Status
                                 </label>
                                 <select
                                     id="isActive"
@@ -215,15 +234,15 @@ export function LineForm() {
                                     } as any)}
                                     className={formStyles.select}
                                 >
-                                    <option value="true">Activo</option>
-                                    <option value="false">Inactivo</option>
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive</option>
                                 </select>
                             </div>
 
-                            {/* Descripción */}
+                            {/* Description */}
                             <div className={`${formStyles.fieldWrapper} ${formStyles.fullWidthField}`}>
                                 <label htmlFor="description" className={formStyles.label}>
-                                    Descripción
+                                    Description
                                 </label>
                                 <textarea
                                     id="description"
@@ -231,7 +250,7 @@ export function LineForm() {
                                     value={formData.description}
                                     onChange={handleChange}
                                     className={formStyles.textarea}
-                                    placeholder="Ingrese una descripción opcional"
+                                    placeholder="Enter optional description"
                                     rows={4}
                                 />
                                 {errors.description && (

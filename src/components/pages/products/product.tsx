@@ -14,22 +14,22 @@ export function Product() {
     const columns: TableColumn<ResponseProductDto>[] = [
         {
             key: 'name',
-            header: 'Nombre',
+            header: 'Name',
             align: 'left'
         },
         {
             key: 'brandId',
-            header: 'Categoría (ID)',
+            header: 'Brand (ID)',
             align: 'left'
         },
         {
             key: 'lineId',
-            header: 'Línea (ID)',
+            header: 'Line (ID)',
             align: 'left'
         },
         {
             key: 'price',
-            header: 'Precio',
+            header: 'Price',
             align: 'right',
             render: (product) => `$${product.price.toFixed(2)}`
         },
@@ -49,7 +49,7 @@ export function Product() {
             const data = await productService.get();
             setProducts(data);
         } catch (error) {
-            console.error('Error cargando productos:', error);
+            console.error('Error loading products:', error);
         }
     };
 
@@ -62,12 +62,12 @@ export function Product() {
     };
 
     const handleDelete = async (id: number | string) => {
-        if (window.confirm('¿Estás seguro de eliminar este producto?')) {
+        if (window.confirm('Are you sure you want to delete this product?')) {
             try {
                 await productService.delete(Number(id));
                 loadProducts();
             } catch (error) {
-                console.error('Error eliminando producto:', error);
+                console.error('Error deleting product:', error);
             }
         }
     };
@@ -81,7 +81,7 @@ export function Product() {
                         onClick={handleAddProduct}
                         className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
                     >
-                        Agregar producto
+                        Add Product
                     </button>
                 </div>
 
@@ -91,7 +91,7 @@ export function Product() {
                         columns={columns}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
-                        emptyMessage="No hay productos disponibles"
+                        emptyMessage="No products available"
                         getItemId={(product) => product.id}
                     />
                 </div>

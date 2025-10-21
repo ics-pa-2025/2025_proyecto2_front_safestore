@@ -1,4 +1,5 @@
 import { authService } from '../services/auth.service.ts';
+import { useAuthAlert } from '../hooks/useAuthAlert';
 import {
     BarChart3,
     Layers,
@@ -12,9 +13,17 @@ import {
 import { sidebarStyles } from './styles.tsx';
 
 export default function Sidebar() {
-    const handleLogout = () => {
-        authService.logout();
-        window.location.href = '/login';
+    const { showLogoutConfirmation, showLogoutSuccess } = useAuthAlert();
+
+    const handleLogout = async () => {
+        const result = await showLogoutConfirmation();
+        if (result.isConfirmed) {
+            authService.logout();
+            showLogoutSuccess();
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1500);
+        }
     };
 
     return (
@@ -48,6 +57,10 @@ export default function Sidebar() {
                     <a className={sidebarStyles.linkClass} href="/suppliers">
                         <Truck className={sidebarStyles.iconClass} />
                         <p className={sidebarStyles.iconClass}>Suppliers</p>   
+                    </a>
+                    <a className={sidebarStyles.linkClass} href="/customers">
+                        <Users className={sidebarStyles.iconClass} />
+                        <p className={sidebarStyles.iconClass}>Customers</p>   
                     </a>
                     <a className={sidebarStyles.linkClass} href="/profile">
                         <User className={sidebarStyles.iconClass} />

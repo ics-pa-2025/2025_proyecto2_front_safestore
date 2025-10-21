@@ -10,6 +10,10 @@ export function BrandsForm() {
     const [searchParams] = useSearchParams();
     const brandId = searchParams.get('id');
     const isEditing = Boolean(brandId);
+    
+    // Detectar si viene de un selector
+    const isFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
+    const returnPath = localStorage.getItem('returnPath');
 
     const [formData, setFormData] = useState({
         name: '',
@@ -40,7 +44,7 @@ export function BrandsForm() {
                 });
             }
         } catch (err) {
-            setError('Error al cargar la marca');
+            setError('Error loading brand');
         } finally {
             setLoading(false);
         }
@@ -78,12 +82,18 @@ export function BrandsForm() {
                 await brandsService.create(brandDto);
             }
 
-            navigate('/brands');
+            if (isFromSelector && returnPath) {
+                // Si viene de un selector, regresar al formulario original
+                navigate(returnPath);
+            } else {
+                // Normal navigation
+                navigate('/brands');
+            }
         } catch (err) {
             setError(
                 isEditing
-                    ? 'Error al actualizar la marca'
-                    : 'Error al crear la marca'
+                    ? 'Error updating brand'
+                    : 'Error creating brand'
             );
         } finally {
             setLoading(false);
@@ -91,13 +101,21 @@ export function BrandsForm() {
     };
 
     const handleCancel = () => {
-        navigate('/brands');
+        if (isFromSelector && returnPath) {
+            // If coming from a selector, return to original form without creating
+            localStorage.removeItem('returnFromEntityCreation');
+            localStorage.removeItem('returnPath');
+            navigate(returnPath);
+        } else {
+            // Normal navigation
+            navigate('/brands');
+        }
     };
 
     if (loading && isEditing) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <div className="text-lg">Cargando...</div>
+                <div className="text-lg">Loading...</div>
             </div>
         );
     }
@@ -109,7 +127,7 @@ export function BrandsForm() {
                     {/* Header */}
                     <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-slate-200">
                         <h1 className="text-xl font-semibold text-slate-800">
-                            {isEditing ? 'Editar Marca' : 'Crear Nueva Marca'}
+                            {isEditing ? 'Edit Brand' : 'Create New Brand'}
                         </h1>
                     </div>
 
@@ -126,7 +144,7 @@ export function BrandsForm() {
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             <div className="lg:col-span-2">
                                 <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
-                                    Nombre <span className="text-red-500">*</span>
+                                    Name <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -136,7 +154,7 @@ export function BrandsForm() {
                                     onChange={handleInputChange}
                                     required
                                     className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                                    placeholder="Nombre de la marca"
+                                    placeholder="Brand name"
                                 />
                             </div>
                             
@@ -151,7 +169,7 @@ export function BrandsForm() {
                                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-slate-300 rounded"
                                     />
                                     <label htmlFor="isActive" className="ml-2 block text-sm text-slate-700 font-medium">
-                                        Marca activa
+                                        Active brand
                                     </label>
                                 </div>
                             </div>
@@ -160,7 +178,7 @@ export function BrandsForm() {
                         {/* Descripción */}
                         <div>
                             <label htmlFor="description" className="block text-sm font-medium text-slate-700 mb-1">
-                                Descripción
+                                Description
                             </label>
                             <textarea
                                 id="description"
@@ -169,14 +187,14 @@ export function BrandsForm() {
                                 onChange={handleInputChange}
                                 rows={3}
                                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors resize-none"
-                                placeholder="Descripción opcional de la marca"
+                                placeholder="Optional brand description"
                             />
                         </div>
 
                         {/* URL del Logo */}
                         <div>
                             <label htmlFor="logo" className="block text-sm font-medium text-slate-700 mb-1">
-                                URL del Logo
+                                Logo URL
                             </label>
                             <input
                                 type="url"
@@ -185,25 +203,25 @@ export function BrandsForm() {
                                 value={formData.logo}
                                 onChange={handleInputChange}
                                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                                placeholder="https://ejemplo.com/logo.png"
+                                placeholder="https://example.com/logo.png"
                             />
                         </div>
 
-                        {/* Botones */}
+                        {/* Buttons */}
                         <div className="flex gap-3 pt-6 border-t border-slate-200">
                             <button
                                 type="button"
                                 onClick={handleCancel}
                                 className="flex-1 px-4 py-2 text-sm border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-100 transition-colors"
                             >
-                                Cancelar
+                                Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={loading}
                                 className="flex-1 px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                {loading ? 'Guardando...' : isEditing ? 'Actualizar' : 'Crear'}
+                                {loading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
                             </button>
                         </div>
                     </form>

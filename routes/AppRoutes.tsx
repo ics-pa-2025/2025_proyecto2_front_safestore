@@ -14,6 +14,8 @@ import {UserForm} from '../src/components/pages/users/user-form';
 import {ProductForm} from '../src/components/pages/products/product-form';
 import {Suppliers} from '../src/components/pages/suppliers/suppliers';
 import {SupplierForm} from '../src/components/pages/suppliers/supplier-form';
+import {Customers} from '../src/components/pages/customers/customers';
+import {CustomerForm} from '../src/components/pages/customers/customer-form';
 import {Sell} from '../src/components/pages/sell/sell';
 import {SellForm} from '../src/components/pages/sell/sell-form';
 import {Lines} from '../src/components/pages/lines/lines';
@@ -49,6 +51,10 @@ export const AppRoutes = () => {
                     {/* Suppliers */}
                     <Route path="suppliers" element={<Suppliers/>}/>
                     <Route path="supplier-form" element={<SupplierForm/>}/>
+
+                    {/* Customers */}
+                    <Route path="customers" element={<Customers/>}/>
+                    <Route path="customer-form" element={<CustomerForm/>}/>
 
                     {/* Users */}
                     <Route path="users" element={<Users/>}/>

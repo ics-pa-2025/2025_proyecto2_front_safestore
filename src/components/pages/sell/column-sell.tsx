@@ -4,7 +4,7 @@ import type {ResponseSellDto} from "../../../dto/sell/response-sell.dto.ts";
 export const columnSell: TableColumn<ResponseSellDto>[] = [
     {
         key: 'id',
-        header: 'Codigo',
+        header: 'Code',
         align: 'left'
     },
     {
@@ -14,17 +14,17 @@ export const columnSell: TableColumn<ResponseSellDto>[] = [
     },
     {
         key: 'createdAt',
-        header: 'fecha',
+        header: 'Date',
         align: 'left'
     },
     {
         key: 'idVendedor',
-        header: 'Vendedor (id)',
+        header: 'Seller (ID)',
         align: 'right',
     },
     {
         key: 'idComprador',
-        header: 'Comprador (id)',
+        header: 'Buyer (ID)',
         align: 'right',
     }
 ];

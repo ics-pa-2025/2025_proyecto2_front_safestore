@@ -1,59 +1,61 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import type { RequestSupplierDto } from '../../../dto/supplier/request-supplier.dto.ts';
-import { supplierService } from '../../../services/supplier.service.ts';
+import { customerService } from '../../../services/customer.service.ts';
+import type { RequestCustomerDto } from '../../../dto/customer/request-customer.dto.ts';
 import { formStyles } from '../../common/FormStyles.tsx';
 
-interface SupplierFormData {
+interface CustomerFormData {
     name: string;
+    lastName: string;
     email: string;
+    address: string;
     phone: string;
-    isActive: boolean;
+    documento: string;
 }
 
-export function SupplierForm() {
+export function CustomerForm() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const supplierId = searchParams.get('id');
-    const isEditing = Boolean(supplierId);
+    const customerId = searchParams.get('id');
+    const isEditing = Boolean(customerId);
     
-    // Detectar si viene de un selector
-    const isFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
-    const returnPath = localStorage.getItem('returnPath');
-    
-    const [formData, setFormData] = useState<SupplierFormData>({
+    const [formData, setFormData] = useState<CustomerFormData>({
         name: '',
+        lastName: '',
         email: '',
+        address: '',
         phone: '',
-        isActive: true,
+        documento: '',
     });
 
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        if (isEditing && supplierId) {
-            loadSupplier(supplierId);
+        if (isEditing && customerId) {
+            loadCustomer(customerId);
         }
-    }, [isEditing, supplierId]);
+    }, [isEditing, customerId]);
 
-    const loadSupplier = async (id: string) => {
+    const loadCustomer = async (id: string) => {
         try {
             setLoading(true);
-            const suppliers = await supplierService.get();
-            const supplier = suppliers.find((s) => s.id === parseInt(id));
-            if (supplier) {
+            const customers = await customerService.get();
+            const customer = customers.find((c) => c.id === parseInt(id));
+            if (customer) {
                 setFormData({
-                    name: supplier.name,
-                    email: supplier.email,
-                    phone: supplier.phone,
-                    isActive: supplier.isActive,
+                    name: customer.name,
+                    lastName: customer.lastName,
+                    email: customer.email,
+                    address: customer.address,
+                    phone: customer.phone,
+                    documento: customer.documento.toString(),
                 });
             }
         } catch (error) {
-            console.error('Error loading supplier:', error);
+            console.error('Error loading customer:', error);
         } finally {
             setLoading(false);
         }
@@ -68,10 +70,22 @@ export function SupplierForm() {
             newErrors.name = 'Name must be at least 2 characters';
         }
 
+        if (!formData.lastName.trim()) {
+            newErrors.lastName = 'Last name is required';
+        } else if (formData.lastName.length < 2) {
+            newErrors.lastName = 'Last name must be at least 2 characters';
+        }
+
         if (!formData.email.trim()) {
             newErrors.email = 'Email is required';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             newErrors.email = 'Email is not valid';
+        }
+
+        if (!formData.address.trim()) {
+            newErrors.address = 'Address is required';
+        } else if (formData.address.length < 5) {
+            newErrors.address = 'Address must be at least 5 characters';
         }
 
         if (!formData.phone.trim()) {
@@ -80,19 +94,29 @@ export function SupplierForm() {
             newErrors.phone = 'Phone must be at least 8 characters';
         }
 
+        if (!formData.documento.trim()) {
+            newErrors.documento = 'Document is required';
+        } else if (!/^\d{8}$/.test(formData.documento)) {
+            newErrors.documento = 'Document must have exactly 8 digits';
+        } else {
+            const doc = parseInt(formData.documento);
+            if (doc < 10000000 || doc > 99999999) {
+                newErrors.documento = 'Document must be between 10000000 and 99999999';
+            }
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
-        const { name, value, type } = e.target;
-        const finalValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+        const { name, value } = e.target;
         
         setFormData((prev) => ({
             ...prev,
-            [name]: finalValue,
+            [name]: value,
         }));
 
         if (errors[name]) {
@@ -113,36 +137,31 @@ export function SupplierForm() {
 
         setLoading(true);
         try {
-            const supplierData: RequestSupplierDto = {
+            const customerData: RequestCustomerDto = {
                 name: formData.name.trim(),
+                lastName: formData.lastName.trim(),
                 email: formData.email.trim(),
+                address: formData.address.trim(),
                 phone: formData.phone.trim(),
-                isActive: formData.isActive,
+                documento: parseInt(formData.documento),
             };
 
-            if (isEditing && supplierId) {
-                await supplierService.update(supplierId, supplierData);
+            if (isEditing && customerId) {
+                await customerService.update(customerId, customerData);
             } else {
-                await supplierService.create(supplierData);
+                await customerService.create(customerData);
             }
-            
-            if (isFromSelector && returnPath) {
-                // If coming from a selector, return to original form
-                navigate(returnPath);
-            } else {
-                // Normal navigation
-                navigate('/suppliers');
-            }
+            navigate('/customers');
         } catch (error) {
-            console.error('Error saving supplier:', error);
+            console.error('Error saving customer:', error);
             
-            let errorMessage = 'Error saving supplier. Please try again.';
+            let errorMessage = 'Error saving customer. Please try again.';
             
             if (error instanceof Error) {
                 if (error.message.includes('email')) {
-                    errorMessage = 'A supplier with this email already exists.';
-                } else if (error.message.includes('name')) {
-                    errorMessage = 'A supplier with this name already exists.';
+                    errorMessage = 'A customer with this email already exists.';
+                } else if (error.message.includes('documento')) {
+                    errorMessage = 'A customer with this document already exists.';
                 }
             }
             
@@ -153,15 +172,7 @@ export function SupplierForm() {
     };
 
     const handleCancel = () => {
-        if (isFromSelector && returnPath) {
-            // If coming from a selector, return to original form without creating
-            localStorage.removeItem('returnFromEntityCreation');
-            localStorage.removeItem('returnPath');
-            navigate(returnPath);
-        } else {
-            // Normal navigation
-            navigate('/suppliers');
-        }
+        navigate('/customers');
     };
 
     if (loading && isEditing) {
@@ -169,7 +180,7 @@ export function SupplierForm() {
             <div className={formStyles.loadingContainer}>
                 <div className={formStyles.loadingContent}>
                     <div className={formStyles.loadingSpinner}></div>
-                    <p className={formStyles.loadingText}>Loading supplier...</p>
+                    <p className={formStyles.loadingText}>Loading customer...</p>
                 </div>
             </div>
         );
@@ -180,7 +191,7 @@ export function SupplierForm() {
             <div className={formStyles.pageContainer}>
                 <div className={formStyles.header}>
                     <h1 className={formStyles.title}>
-                        {isEditing ? 'Edit Supplier' : 'New Supplier'}
+                        {isEditing ? 'Edit Customer' : 'New Customer'}
                     </h1>
                     <div className={formStyles.buttonContainer}>
                         <button
@@ -192,18 +203,18 @@ export function SupplierForm() {
                         </button>
                         <button
                             type="submit"
-                            form="supplier-form"
+                            form="customer-form"
                             disabled={loading}
                             className={formStyles.submitButton}
                         >
-                            {loading ? 'Guardando...' : 'Guardar'}
+                            {loading ? 'Saving...' : 'Save'}
                         </button>
                     </div>
                 </div>
 
                 <div className={formStyles.formContainer}>
                     <form
-                        id="supplier-form"
+                        id="customer-form"
                         onSubmit={handleSubmit}
                         className={formStyles.form}
                     >
@@ -220,10 +231,29 @@ export function SupplierForm() {
                                     value={formData.name}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Enter supplier name"
+                                    placeholder="Enter customer name"
                                 />
                                 {errors.name && (
                                     <p className={formStyles.errorMessage}>{errors.name}</p>
+                                )}
+                            </div>
+
+                            {/* Last Name */}
+                            <div className={formStyles.fieldWrapper}>
+                                <label htmlFor="lastName" className={formStyles.label}>
+                                    Last Name <span className={formStyles.required}>*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    id="lastName"
+                                    name="lastName"
+                                    value={formData.lastName}
+                                    onChange={handleChange}
+                                    className={formStyles.input}
+                                    placeholder="Enter customer last name"
+                                />
+                                {errors.lastName && (
+                                    <p className={formStyles.errorMessage}>{errors.lastName}</p>
                                 )}
                             </div>
 
@@ -239,7 +269,7 @@ export function SupplierForm() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Enter supplier email"
+                                    placeholder="Enter customer email"
                                 />
                                 {errors.email && (
                                     <p className={formStyles.errorMessage}>{errors.email}</p>
@@ -258,35 +288,50 @@ export function SupplierForm() {
                                     value={formData.phone}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Enter supplier phone"
+                                    placeholder="Enter customer phone"
                                 />
                                 {errors.phone && (
                                     <p className={formStyles.errorMessage}>{errors.phone}</p>
                                 )}
                             </div>
 
-                            {/* Status */}
+                            {/* Document */}
                             <div className={formStyles.fieldWrapper}>
-                                <label htmlFor="isActive" className={formStyles.label}>
-                                    Status
+                                <label htmlFor="documento" className={formStyles.label}>
+                                    Document <span className={formStyles.required}>*</span>
                                 </label>
-                                <select
-                                    id="isActive"
-                                    name="isActive"
-                                    value={formData.isActive.toString()}
-                                    onChange={(e) => handleChange({
-                                        ...e,
-                                        target: {
-                                            ...e.target,
-                                            name: 'isActive',
-                                            value: e.target.value === 'true'
-                                        }
-                                    } as any)}
-                                    className={formStyles.select}
-                                >
-                                    <option value="true">Active</option>
-                                    <option value="false">Inactive</option>
-                                </select>
+                                <input
+                                    type="text"
+                                    id="documento"
+                                    name="documento"
+                                    value={formData.documento}
+                                    onChange={handleChange}
+                                    className={formStyles.input}
+                                    placeholder="Enter customer document (8 digits)"
+                                    maxLength={8}
+                                />
+                                {errors.documento && (
+                                    <p className={formStyles.errorMessage}>{errors.documento}</p>
+                                )}
+                            </div>
+
+                            {/* Address */}
+                            <div className={`${formStyles.fieldWrapper} ${formStyles.fullWidthField}`}>
+                                <label htmlFor="address" className={formStyles.label}>
+                                    Address <span className={formStyles.required}>*</span>
+                                </label>
+                                <textarea
+                                    id="address"
+                                    name="address"
+                                    value={formData.address}
+                                    onChange={handleChange}
+                                    className={formStyles.textarea}
+                                    placeholder="Enter customer address"
+                                    rows={3}
+                                />
+                                {errors.address && (
+                                    <p className={formStyles.errorMessage}>{errors.address}</p>
+                                )}
                             </div>
                         </div>
                     </form>

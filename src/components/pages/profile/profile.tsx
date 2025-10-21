@@ -27,10 +27,10 @@ export function Profile() {
         setLoading(true);
         try {
             await profileService.update(user.id, formData);
-            alert('Cambios guardados correctamente.');
+            alert('Changes saved successfully.');
         } catch (error) {
-            console.error('Error actualizando perfil:', error);
-            alert('Error al guardar los cambios. Por favor intente nuevamente.');
+            console.error('Error updating profile:', error);
+            alert('Error saving changes. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -49,7 +49,7 @@ export function Profile() {
             <div className={formStyles.pageContainer}>
                 <div className={formStyles.header}>
                     <h1 className={formStyles.title}>
-                        Mi Perfil
+                        My Profile
                     </h1>
                     <div className={formStyles.buttonContainer}>
                         <button
@@ -57,7 +57,7 @@ export function Profile() {
                             onClick={handleCancel}
                             className={formStyles.cancelButton}
                         >
-                            Cancelar
+                            Cancel
                         </button>
                         <button
                             type="submit"
@@ -65,7 +65,7 @@ export function Profile() {
                             disabled={loading}
                             className={formStyles.submitButton}
                         >
-                            {loading ? 'Guardando...' : 'Guardar Cambios'}
+                            {loading ? 'Saving...' : 'Save Changes'}
                         </button>
                     </div>
                 </div>
@@ -73,10 +73,10 @@ export function Profile() {
                 <div className={formStyles.formContainer}>
                     <form id="profile-form" onSubmit={handleSubmit} className={formStyles.form}>
                         <div className={formStyles.fieldGrid}>
-                            {/* Nombre Completo */}
+                            {/* Full Name */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="fullname" className={formStyles.label}>
-                                    Nombre Completo <span className={formStyles.required}>*</span>
+                                    Full Name <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -84,16 +84,16 @@ export function Profile() {
                                     name="fullname"
                                     value={formData.fullname}
                                     onChange={handleChange}
-                                    placeholder="Tu nombre completo"
+                                    placeholder="Your full name"
                                     className={formStyles.input}
                                     required
                                 />
                             </div>
 
-                            {/* Correo Electrónico */}
+                            {/* Email */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="email" className={formStyles.label}>
-                                    Correo Electrónico
+                                    Email
                                 </label>
                                 <input
                                     type="email"
@@ -105,10 +105,10 @@ export function Profile() {
                                 />
                             </div>
 
-                            {/* Teléfono */}
+                            {/* Phone */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="phone" className={formStyles.label}>
-                                    Teléfono
+                                    Phone
                                 </label>
                                 <input
                                     type="tel"
@@ -116,15 +116,15 @@ export function Profile() {
                                     name="phone"
                                     value={formData.phone}
                                     onChange={handleChange}
-                                    placeholder="Tu número de teléfono"
+                                    placeholder="Your phone number"
                                     className={formStyles.input}
                                 />
                             </div>
 
-                            {/* Dirección de Envío */}
+                            {/* Shipping Address */}
                             <div className={formStyles.fullWidthField}>
                                 <label htmlFor="address" className={formStyles.label}>
-                                    Dirección de Envío
+                                    Shipping Address
                                 </label>
                                 <input
                                     type="text"
@@ -132,7 +132,7 @@ export function Profile() {
                                     name="address"
                                     value={formData.address}
                                     onChange={handleChange}
-                                    placeholder="Tu dirección completa"
+                                    placeholder="Your complete address"
                                     className={formStyles.input}
                                 />
                             </div>

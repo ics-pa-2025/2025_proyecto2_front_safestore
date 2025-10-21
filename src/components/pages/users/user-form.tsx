@@ -56,7 +56,7 @@ export function UserForm() {
                 });
             }
         } catch (error) {
-            console.error('Error cargando usuario:', error);
+            console.error('Error loading user:', error);
         } finally {
             setLoading(false);
         }
@@ -78,27 +78,27 @@ export function UserForm() {
         const newErrors: Record<string, string> = {};
 
         if (!formData.email.trim()) {
-            newErrors.email = 'El email es requerido';
+            newErrors.email = 'Email is required';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'El email no es válido';
+            newErrors.email = 'Email is not valid';
         }
 
         if (!isEditing && !formData.password.trim()) {
-            newErrors.password = 'La contraseña es requerida';
+            newErrors.password = 'Password is required';
         } else if (!isEditing && formData.password.length < 6) {
-            newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+            newErrors.password = 'Password must be at least 6 characters';
         }
 
         if (!formData.fullname.trim()) {
-            newErrors.fullname = 'El nombre completo es requerido';
+            newErrors.fullname = 'Full name is required';
         }
 
         if (!formData.phone.trim()) {
-            newErrors.phone = 'El teléfono es requerido';
+            newErrors.phone = 'Phone is required';
         }
 
         if (!formData.address.trim()) {
-            newErrors.address = 'La dirección es requerida';
+            newErrors.address = 'Address is required';
         }
 
         setErrors(newErrors);
@@ -152,17 +152,17 @@ export function UserForm() {
             }
             navigate('/users');
         } catch (error) {
-            console.error('Error guardando usuario:', error);
+            console.error('Error saving user:', error);
             
-            // Manejar diferentes tipos de errores
-            let errorMessage = 'Error al guardar el usuario. Por favor intente nuevamente.';
+            // Handle different types of errors
+            let errorMessage = 'Error saving user. Please try again.';
             
             if (error instanceof Error) {
-                // Si el error contiene información específica sobre email duplicado, etc.
+                // If the error contains specific information about duplicate email, etc.
                 if (error.message.includes('email')) {
-                    errorMessage = 'Ya existe un usuario con este email.';
+                    errorMessage = 'A user with this email already exists.';
                 } else if (error.message.includes('phone')) {
-                    errorMessage = 'Ya existe un usuario con este teléfono.';
+                    errorMessage = 'A user with this phone already exists.';
                 }
             }
             
@@ -181,7 +181,7 @@ export function UserForm() {
             <div className={formStyles.loadingContainer}>
                 <div className={formStyles.loadingContent}>
                     <div className={formStyles.loadingSpinner}></div>
-                    <p className={formStyles.loadingText}>Cargando usuario...</p>
+                    <p className={formStyles.loadingText}>Loading user...</p>
                 </div>
             </div>
         );
@@ -192,7 +192,7 @@ export function UserForm() {
             <div className={formStyles.pageContainer}>
                 <div className={formStyles.header}>
                     <h1 className={formStyles.title}>
-                        {isEditing ? 'Editar Usuario' : 'Nuevo Usuario'}
+                        {isEditing ? 'Edit User' : 'New User'}
                     </h1>
                     <div className={formStyles.buttonContainer}>
                         <button
@@ -200,7 +200,7 @@ export function UserForm() {
                             onClick={handleCancel}
                             className={formStyles.cancelButton}
                         >
-                            Cancelar
+                            Cancel
                         </button>
                         <button
                             type="submit"
@@ -208,7 +208,7 @@ export function UserForm() {
                             disabled={loading}
                             className={formStyles.submitButton}
                         >
-                            {loading ? 'Guardando...' : isEditing ? 'Actualizar' : 'Crear'}
+                            {loading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
                         </button>
                     </div>
                 </div>
@@ -229,7 +229,7 @@ export function UserForm() {
                                     onChange={handleChange}
                                     disabled={isEditing}
                                     className={isEditing ? formStyles.disabledInput : formStyles.input}
-                                    placeholder="correo@ejemplo.com"
+                                    placeholder="email@example.com"
                                 />
                                 {errors.email && (
                                     <p className={formStyles.errorMessage}>
@@ -238,10 +238,10 @@ export function UserForm() {
                                 )}
                             </div>
 
-                            {/* Nombre Completo */}
+                            {/* Full Name */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="fullname" className={formStyles.label}>
-                                    Nombre Completo <span className={formStyles.required}>*</span>
+                                    Full Name <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -250,7 +250,7 @@ export function UserForm() {
                                     value={formData.fullname}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Ingrese el nombre completo"
+                                    placeholder="Enter full name"
                                 />
                                 {errors.fullname && (
                                     <p className={formStyles.errorMessage}>
@@ -259,11 +259,11 @@ export function UserForm() {
                                 )}
                             </div>
 
-                            {/* Password - Solo para nuevo usuario */}
+                            {/* Password - Only for new user */}
                             {!isEditing && (
                                 <div className={formStyles.fieldWrapper}>
                                     <label htmlFor="password" className={formStyles.label}>
-                                        Contraseña <span className={formStyles.required}>*</span>
+                                        Password <span className={formStyles.required}>*</span>
                                     </label>
                                     <input
                                         type="password"
@@ -272,7 +272,7 @@ export function UserForm() {
                                         value={formData.password}
                                         onChange={handleChange}
                                         className={formStyles.input}
-                                        placeholder="Mínimo 6 caracteres"
+                                        placeholder="Minimum 6 characters"
                                     />
                                     {errors.password && (
                                         <p className={formStyles.errorMessage}>
@@ -282,10 +282,10 @@ export function UserForm() {
                                 </div>
                             )}
 
-                            {/* Teléfono */}
+                            {/* Phone */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="phone" className={formStyles.label}>
-                                    Teléfono <span className={formStyles.required}>*</span>
+                                    Phone <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="tel"
@@ -303,10 +303,10 @@ export function UserForm() {
                                 )}
                             </div>
 
-                            {/* Dirección */}
+                            {/* Address */}
                             <div className={formStyles.fullWidthField}>
                                 <label htmlFor="address" className={formStyles.label}>
-                                    Dirección <span className={formStyles.required}>*</span>
+                                    Address <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -315,7 +315,7 @@ export function UserForm() {
                                     value={formData.address}
                                     onChange={handleChange}
                                     className={formStyles.input}
-                                    placeholder="Calle, número, ciudad"
+                                    placeholder="Street, number, city"
                                 />
                                 {errors.address && (
                                     <p className={formStyles.errorMessage}>

@@ -5,6 +5,7 @@ import {useNavigate, useSearchParams} from 'react-router-dom';
 import {productService} from '../../../services/product.service.ts';
 import {sellService} from '../../../services/sell.service.ts';
 import {formStyles} from '../../common/FormStyles.tsx';
+import {EntitySelector, useEntitySelector} from '../../common/EntitySelector.tsx';
 import type {ResponseProductDto} from "../../../dto/product/response-product.dto.ts";
 import type {SellDetailDto} from "../../../dto/sell/sell-detail.dto.ts";
 import {RequestSellDto} from "../../../dto/sell/request-sell.dto.ts";
@@ -27,6 +28,7 @@ export function SellForm() {
     const [sellItems, setSellItems] = useState<SellItem[]>([]);
     const [idComprador, setIdComprador] = useState<string>('');
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const { reloadData } = useEntitySelector();
 
     useEffect(() => {
         loadProducts();
@@ -37,15 +39,20 @@ export function SellForm() {
             const data = await productService.get();
             setProducts(data.filter(p => p.isActive && p.stock > 0));
         } catch (error) {
-            console.error('Error cargando productos:', error);
+            console.error('Error loading products:', error);
         }
+    };
+
+    // Function to reload products after creating a new one
+    const handleReloadProducts = async () => {
+        await reloadData(() => productService.get().then(data => data.filter(p => p.isActive && p.stock > 0)), setProducts);
     };
 
     const handleAddItem = () => {
         const newErrors: Record<string, string> = {};
 
         if (!selectedProductId || selectedProductId === 0) {
-            newErrors.product = 'Debe seleccionar un producto';
+            newErrors.product = 'Must select a product';
         }
 
         if (cantidad <= 0) {
@@ -55,7 +62,7 @@ export function SellForm() {
         const selectedProduct = products.find(p => p.id === selectedProductId);
 
         if (selectedProduct && cantidad > selectedProduct.stock) {
-            newErrors.cantidad = `Stock insuficiente. Disponible: ${selectedProduct.stock}`;
+            newErrors.cantidad = `Insufficient stock. Available: ${selectedProduct.stock}`;
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -64,7 +71,7 @@ export function SellForm() {
         }
 
         if (selectedProduct) {
-            // Verificar si el producto ya existe
+            // Check if product already exists
             const existingItemIndex = sellItems.findIndex(item => item.product.id === selectedProductId);
 
             if (existingItemIndex !== -1) {
@@ -72,16 +79,16 @@ export function SellForm() {
                 const updatedItems = [...sellItems];
                 const newCantidad = updatedItems[existingItemIndex].cantidad + cantidad;
 
-                // Verificar que no exceda el stock
+                // Check that it doesn't exceed stock
                 if (newCantidad > selectedProduct.stock) {
-                    setErrors({cantidad: `Stock insuficiente. Disponible: ${selectedProduct.stock}`});
+                    setErrors({cantidad: `Insufficient stock. Available: ${selectedProduct.stock}`});
                     return;
                 }
 
                 updatedItems[existingItemIndex].cantidad = newCantidad;
                 setSellItems(updatedItems);
             } else {
-                // Si no existe, agregarlo como nuevo
+                // If it doesn't exist, add it as new
                 setSellItems([...sellItems, {
                     product: selectedProduct,
                     cantidad: cantidad,
@@ -107,7 +114,7 @@ export function SellForm() {
         }
 
         if (product && newQuantity > product.stock) {
-            alert(`Stock insuficiente. Disponible: ${product.stock}`);
+            alert(`Insufficient stock. Available: ${product.stock}`);
             return;
         }
 
@@ -128,7 +135,7 @@ export function SellForm() {
         const newErrors: Record<string, string> = {};
 
         if (sellItems.length === 0) {
-            newErrors.items = 'Debe agregar al menos un producto a la venta';
+            newErrors.items = 'Must add at least one product to the sale';
         }
 
         setErrors(newErrors);
@@ -156,8 +163,8 @@ export function SellForm() {
             await sellService.create(requestSellDto);
             navigate('/sell');
         } catch (error) {
-            console.error('Error guardando venta:', error);
-            alert('Error al guardar la venta. Por favor intente nuevamente.');
+            console.error('Error saving sale:', error);
+            alert('Error saving sale. Please try again.');
         }
     };
 
@@ -170,7 +177,7 @@ export function SellForm() {
                 <div className={formStyles.pageContainer}>
                     <div className={formStyles.header}>
                         <h1 className={formStyles.title}>
-                            {isEditing ? 'Editar Venta' : 'Nueva Venta'}
+                            {isEditing ? 'Edit Sale' : 'New Sale'}
                         </h1>
                         <div className={formStyles.buttonContainer}>
                             <button
@@ -178,7 +185,7 @@ export function SellForm() {
                                     onClick={handleCancel}
                                     className={formStyles.cancelButton}
                             >
-                                Cancelar
+                                Cancel
                             </button>
                             <button
                                     type="submit"
@@ -186,7 +193,7 @@ export function SellForm() {
                                     className={formStyles.submitButton}
                                     disabled={sellItems.length === 0}
                             >
-                                {isEditing ? 'Actualizar' : 'Crear Venta'}
+                                {isEditing ? 'Update' : 'Create Sale'}
                             </button>
                         </div>
                     </div>
@@ -211,40 +218,46 @@ export function SellForm() {
                                 </div>
                             </div>
 
-                            {/* Sección para agregar productos */}
+                            {/* Section to add products */}
                             <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                <h3 className="text-lg font-semibold text-slate-800 mb-4">Agregar Producto</h3>
+                                <h3 className="text-lg font-semibold text-slate-800 mb-4">Add Product</h3>
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="md:col-span-1">
-                                        <label htmlFor="product" className={formStyles.label}>
-                                            Producto <span className={formStyles.required}>*</span>
-                                        </label>
-                                        <select
-                                                id="product"
-                                                value={selectedProductId}
-                                                onChange={(e) => {
-                                                    setSelectedProductId(Number(e.target.value));
-                                                    setErrors({});
-                                                }}
-                                                className={formStyles.input}
-                                        >
-                                            <option value={0}>Seleccione un producto</option>
-                                            {products.map((product) => (
-                                                    <option key={product.id} value={product.id}>
-                                                        {product.name} -
-                                                        ${product.price.toFixed(2)} (Stock: {product.stock})
-                                                    </option>
-                                            ))}
-                                        </select>
-                                        {errors.product && (
-                                                <p className="mt-1 text-sm text-red-600">{errors.product}</p>
-                                        )}
+                                        <EntitySelector
+                                            options={products}
+                                            value={selectedProductId}
+                                            onChange={(value: number) => {
+                                                setSelectedProductId(value);
+                                                setErrors({});
+                                            }}
+                                            entityName="product"
+                                            entityNamePlural="products"
+                                            createRoute="/product-form"
+                                            label="Product"
+                                            required
+                                            error={errors.product}
+                                            onReload={handleReloadProducts}
+                                            filterFn={(option: any) => option.isActive && option.stock > 0}
+                                            formatOptionText={(product: any) => 
+                                                `${product.name} - $${product.price.toFixed(2)} (Stock: ${product.stock})`
+                                            }
+                                            showDetailCard={true}
+                                            detailCardContent={(product: any) => (
+                                                <div className="text-sm text-blue-800">
+                                                    <div className="font-medium">{product.name}</div>
+                                                    <div className="flex justify-between mt-1">
+                                                        <span>Price: ${product.price.toFixed(2)}</span>
+                                                        <span>Available stock: {product.stock}</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        />
                                     </div>
 
                                     <div className="md:col-span-1">
                                         <label htmlFor="cantidad" className={formStyles.label}>
-                                            Cantidad <span className={formStyles.required}>*</span>
+                                            Quantity <span className={formStyles.required}>*</span>
                                         </label>
                                         <input
                                                 type="number"
@@ -268,7 +281,7 @@ export function SellForm() {
                                                 onClick={handleAddItem}
                                                 className="w-full bg-green-600 px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
                                         >
-                                            Agregar
+                                            Add
                                         </button>
                                     </div>
                                 </div>
@@ -280,17 +293,15 @@ export function SellForm() {
                             {/* Lista de productos agregados */}
                             {sellItems.length > 0 && (
                                     <div className="mt-6">
-                                        <h3 className="text-lg font-semibold text-slate-800 mb-4">Productos en la
-                                            Venta</h3>
+                                        <h3 className="text-lg font-semibold text-slate-800 mb-4">Products in Sale</h3>
                                         <div className="overflow-x-auto">
                                             <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                                                 <thead className="bg-gray-50">
                                                 <tr>
-                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
-                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio
-                                                        Unit.
+                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price
                                                     </th>
-                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
+                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
                                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subtotal</th>
                                                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
                                                 </tr>
@@ -319,7 +330,7 @@ export function SellForm() {
                                                                         onClick={() => handleRemoveItem(item.product.id)}
                                                                         className="text-red-600 hover:text-red-800"
                                                                 >
-                                                                    Eliminar
+                                                                    Remove
                                                                 </button>
                                                             </td>
                                                         </tr>

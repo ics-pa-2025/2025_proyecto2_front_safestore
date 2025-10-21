@@ -9,12 +9,17 @@ import { productService } from '../../../services/product.service.ts';
 import { brandsService } from '../../../services/brands.service.ts';
 import { lineService } from '../../../services/line.service.ts';
 import { formStyles } from '../../common/FormStyles.tsx';
+import { EntitySelector, useEntitySelector } from '../../common/EntitySelector.tsx';
 
 export function ProductForm() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const productId = searchParams.get('id');
     const isEditing = Boolean(productId);
+    
+    // Detectar si viene de un selector
+    const isFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
+    const returnPath = localStorage.getItem('returnPath');
     const [formData, setFormData] = useState<RequestProductDto>({
         name: '',
         description: '',
@@ -28,6 +33,7 @@ export function ProductForm() {
     const [lines, setLines] = useState<ResponseLineDto[]>([]);
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const { reloadData } = useEntitySelector();
 
     useEffect(() => {
         loadBrands();
@@ -54,7 +60,7 @@ export function ProductForm() {
                 });
             }
         } catch (error) {
-            console.error('Error cargando producto:', error);
+            console.error('Error loading product:', error);
         } finally {
             setLoading(false);
         }
@@ -65,7 +71,7 @@ export function ProductForm() {
             const data = await brandsService.get();
             setBrands(data);
         } catch (error) {
-            console.error('Error cargando marcas:', error);
+            console.error('Error loading brands:', error);
         }
     };
 
@@ -74,8 +80,17 @@ export function ProductForm() {
             const data = await lineService.get();
             setLines(data);
         } catch (error) {
-            console.error('Error cargando líneas:', error);
+            console.error('Error loading lines:', error);
         }
+    };
+
+    // Functions to reload data after creating new entities
+    const handleReloadBrands = async () => {
+        await reloadData(brandsService.get, setBrands);
+    };
+
+    const handleReloadLines = async () => {
+        await reloadData(lineService.get, setLines);
     };
 
     const resetForm = () => {
@@ -94,23 +109,23 @@ export function ProductForm() {
         const newErrors: Record<string, string> = {};
 
         if (!formData.name.trim()) {
-            newErrors.name = 'El nombre es requerido';
+            newErrors.name = 'Name is required';
         }
 
         if (formData.price <= 0) {
-            newErrors.price = 'El precio debe ser mayor a 0';
+            newErrors.price = 'Price must be greater than 0';
         }
 
         if (formData.stock < 0) {
-            newErrors.stock = 'El stock no puede ser negativo';
+            newErrors.stock = 'Stock cannot be negative';
         }
 
         if (!formData.brandId || formData.brandId === 0) {
-            newErrors.brandId = 'Debe seleccionar una marca';
+            newErrors.brandId = 'Must select a brand';
         }
 
         if (!formData.lineId || formData.lineId === 0) {
-            newErrors.lineId = 'Debe seleccionar una línea';
+            newErrors.lineId = 'Must select a line';
         }
 
         setErrors(newErrors);
@@ -134,7 +149,7 @@ export function ProductForm() {
                     : value,
         }));
 
-        // Limpiar error del campo cuando el usuario empieza a escribir
+        // Clear field error when user starts typing
         if (errors[name]) {
             setErrors((prev) => {
                 const newErrors = { ...prev };
@@ -158,11 +173,24 @@ export function ProductForm() {
             } else {
                 await productService.create(formData);
             }
-            navigate('/products');
+            
+            // Verificar si viene de un selector
+            const currentIsFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
+            const currentReturnPath = localStorage.getItem('returnPath');
+            
+            if (currentIsFromSelector && currentReturnPath) {
+                // Si viene de un selector, regresar al formulario original
+                localStorage.removeItem('returnFromEntityCreation');
+                localStorage.removeItem('returnPath');
+                navigate(currentReturnPath);
+            } else {
+                // Navegación normal
+                navigate('/products');
+            }
         } catch (error) {
-            console.error('Error guardando producto:', error);
+            console.error('Error saving product:', error);
             alert(
-                'Error al guardar el producto. Por favor intente nuevamente.'
+                'Error saving product. Please try again.'
             );
         } finally {
             setLoading(false);
@@ -170,7 +198,19 @@ export function ProductForm() {
     };
 
     const handleCancel = () => {
-        navigate('/products');
+        // Verificar si viene de un selector
+        const currentIsFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
+        const currentReturnPath = localStorage.getItem('returnPath');
+        
+        if (currentIsFromSelector && currentReturnPath) {
+            // If coming from a selector, return to original form without creating
+            localStorage.removeItem('returnFromEntityCreation');
+            localStorage.removeItem('returnPath');
+            navigate(currentReturnPath);
+        } else {
+            // Navegación normal
+            navigate('/products');
+        }
     };
 
     if (loading && isEditing) {
@@ -189,7 +229,7 @@ export function ProductForm() {
             <div className={formStyles.pageContainer}>
                 <div className={formStyles.header}>
                     <h1 className={formStyles.title}>
-                        {isEditing ? 'Editar Producto' : 'Nuevo Producto'}
+                        {isEditing ? 'Edit Product' : 'New Product'}
                     </h1>
                     <div className={formStyles.buttonContainer}>
                         <button
@@ -197,7 +237,7 @@ export function ProductForm() {
                             onClick={handleCancel}
                             className={formStyles.cancelButton}
                         >
-                            Cancelar
+                            Cancel
                         </button>
                         <button
                             type="submit"
@@ -205,7 +245,7 @@ export function ProductForm() {
                             disabled={loading}
                             className={formStyles.submitButton}
                         >
-                            {loading ? 'Guardando...' : isEditing ? 'Actualizar' : 'Crear'}
+                            {loading ? 'Saving...' : isEditing ? 'Update' : 'Create'}
                         </button>
                     </div>
                 </div>
@@ -213,10 +253,10 @@ export function ProductForm() {
                 <div className={formStyles.formContainer}>
                     <form id="product-form" onSubmit={handleSubmit} className={formStyles.form}>
                         <div className={formStyles.fieldGrid}>
-                            {/* Nombre */}
+                            {/* Name */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="name" className={formStyles.label}>
-                                    Nombre <span className={formStyles.required}>*</span>
+                                    Name <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -224,7 +264,7 @@ export function ProductForm() {
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    placeholder="Nombre del producto"
+                                    placeholder="Product name"
                                     className={formStyles.input}
                                 />
                                 {errors.name && (
@@ -232,34 +272,34 @@ export function ProductForm() {
                                 )}
                             </div>
 
-                            {/* Marca */}
-                            <div className={formStyles.fieldWrapper}>
-                                <label htmlFor="brandId" className={formStyles.label}>
-                                    Marca <span className={formStyles.required}>*</span>
-                                </label>
-                                <select
-                                    id="brandId"
-                                    name="brandId"
-                                    value={formData.brandId}
-                                    onChange={handleChange}
-                                    className={formStyles.select}
-                                >
-                                    <option value={0}>Seleccionar marca</option>
-                                    {brands.map((brand) => (
-                                        <option key={brand.id} value={brand.id}>
-                                            {brand.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.brandId && (
-                                    <p className={formStyles.errorMessage}>{errors.brandId}</p>
-                                )}
-                            </div>
+                            {/* Brand */}
+                            <EntitySelector
+                                options={brands}
+                                value={formData.brandId}
+                                onChange={(value: number) => {
+                                    setFormData(prev => ({ ...prev, brandId: value }));
+                                    if (errors.brandId) {
+                                        setErrors(prev => {
+                                            const newErrors = { ...prev };
+                                            delete newErrors.brandId;
+                                            return newErrors;
+                                        });
+                                    }
+                                }}
+                                entityName="brand"
+                                entityNamePlural="brands"
+                                createRoute="/brands-form"
+                                label="Brand"
+                                required
+                                error={errors.brandId}
+                                onReload={handleReloadBrands}
+                                filterFn={(option: any) => option.isActive !== false}
+                            />
 
-                            {/* Precio */}
+                            {/* Price */}
                             <div className={formStyles.fieldWrapper}>
                                 <label htmlFor="price" className={formStyles.label}>
-                                    Precio <span className={formStyles.required}>*</span>
+                                    Price <span className={formStyles.required}>*</span>
                                 </label>
                                 <input
                                     type="number"
@@ -277,29 +317,29 @@ export function ProductForm() {
                                 )}
                             </div>
 
-                            {/* Línea */}
-                            <div className={formStyles.fieldWrapper}>
-                                <label htmlFor="lineId" className={formStyles.label}>
-                                    Línea <span className={formStyles.required}>*</span>
-                                </label>
-                                <select
-                                    id="lineId"
-                                    name="lineId"
-                                    value={formData.lineId}
-                                    onChange={handleChange}
-                                    className={formStyles.select}
-                                >
-                                    <option value={0}>Seleccionar línea</option>
-                                    {lines.map((line) => (
-                                        <option key={line.id} value={line.id}>
-                                            {line.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.lineId && (
-                                    <p className={formStyles.errorMessage}>{errors.lineId}</p>
-                                )}
-                            </div>
+                            {/* Line */}
+                            <EntitySelector
+                                options={lines}
+                                value={formData.lineId}
+                                onChange={(value: number) => {
+                                    setFormData(prev => ({ ...prev, lineId: value }));
+                                    if (errors.lineId) {
+                                        setErrors(prev => {
+                                            const newErrors = { ...prev };
+                                            delete newErrors.lineId;
+                                            return newErrors;
+                                        });
+                                    }
+                                }}
+                                entityName="line"
+                                entityNamePlural="lines"
+                                createRoute="/line-form"
+                                label="Line"
+                                required
+                                error={errors.lineId}
+                                onReload={handleReloadLines}
+                                filterFn={(option: any) => option.isActive !== false}
+                            />
 
                             {/* Stock */}
                             <div className={formStyles.fieldWrapper}>
@@ -321,7 +361,7 @@ export function ProductForm() {
                                 )}
                             </div>
 
-                            {/* Descripción */}
+                            {/* Description */}
                             <div className={formStyles.fullWidthField}>
                                 <label htmlFor="description" className={formStyles.label}>
                                     Descripción
@@ -331,7 +371,7 @@ export function ProductForm() {
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}
-                                    placeholder="Descripción opcional"
+                                    placeholder="Optional description"
                                     rows={3}
                                     className={formStyles.textarea}
                                 />

@@ -35,7 +35,7 @@ export function Table<T>({
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12">
                 <div className="text-center">
                     <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-slate-200 border-t-blue-500"></div>
-                    <p className="mt-4 text-slate-600 font-medium">Cargando datos...</p>
+                    <p className="mt-4 text-slate-600 font-medium">Loading data...</p>
                 </div>
             </div>
         );
@@ -121,7 +121,7 @@ export function Table<T>({
                                                     <button
                                                         onClick={() => onEdit(itemId)}
                                                         className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 hover:scale-105 transition-all duration-200 shadow-sm"
-                                                        title="Editar"
+                                                        title="Edit"
                                                     >
                                                         <Pencil size={16} />
                                                     </button>
@@ -130,7 +130,7 @@ export function Table<T>({
                                                     <button
                                                         onClick={() => onDelete(itemId)}
                                                         className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 hover:scale-105 transition-all duration-200 shadow-sm"
-                                                        title="Eliminar"
+                                                        title="Delete"
                                                     >
                                                         <Trash2 size={16} />
                                                     </button>
