@@ -19,6 +19,10 @@ export function SupplierForm() {
     const supplierId = searchParams.get('id');
     const isEditing = Boolean(supplierId);
     
+    // Detectar si viene de un selector
+    const isFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
+    const returnPath = localStorage.getItem('returnPath');
+    
     const [formData, setFormData] = useState<SupplierFormData>({
         name: '',
         email: '',
@@ -121,7 +125,14 @@ export function SupplierForm() {
             } else {
                 await supplierService.create(supplierData);
             }
-            navigate('/suppliers');
+            
+            if (isFromSelector && returnPath) {
+                // Si viene de un selector, regresar al formulario original
+                navigate(returnPath);
+            } else {
+                // Navegación normal
+                navigate('/suppliers');
+            }
         } catch (error) {
             console.error('Error guardando proveedor:', error);
             
@@ -142,7 +153,15 @@ export function SupplierForm() {
     };
 
     const handleCancel = () => {
-        navigate('/suppliers');
+        if (isFromSelector && returnPath) {
+            // Si viene de un selector, regresar al formulario original sin crear
+            localStorage.removeItem('returnFromEntityCreation');
+            localStorage.removeItem('returnPath');
+            navigate(returnPath);
+        } else {
+            // Navegación normal
+            navigate('/suppliers');
+        }
     };
 
     if (loading && isEditing) {

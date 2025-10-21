@@ -18,6 +18,10 @@ export function LineForm() {
     const lineId = searchParams.get('id');
     const isEditing = Boolean(lineId);
     
+    // Detectar si viene de un selector
+    const isFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
+    const returnPath = localStorage.getItem('returnPath');
+    
     const [formData, setFormData] = useState<LineFormData>({
         name: '',
         description: '',
@@ -111,7 +115,14 @@ export function LineForm() {
             } else {
                 await lineService.create(lineData);
             }
-            navigate('/lines');
+            
+            if (isFromSelector && returnPath) {
+                // Si viene de un selector, regresar al formulario original
+                navigate(returnPath);
+            } else {
+                // Navegación normal
+                navigate('/lines');
+            }
         } catch (error) {
             console.error('Error guardando línea:', error);
             
@@ -130,7 +141,15 @@ export function LineForm() {
     };
 
     const handleCancel = () => {
-        navigate('/lines');
+        if (isFromSelector && returnPath) {
+            // Si viene de un selector, regresar al formulario original sin crear
+            localStorage.removeItem('returnFromEntityCreation');
+            localStorage.removeItem('returnPath');
+            navigate(returnPath);
+        } else {
+            // Navegación normal
+            navigate('/lines');
+        }
     };
 
     if (loading && isEditing) {

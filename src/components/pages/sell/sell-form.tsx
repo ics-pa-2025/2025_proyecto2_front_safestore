@@ -5,6 +5,7 @@ import {useNavigate, useSearchParams} from 'react-router-dom';
 import {productService} from '../../../services/product.service.ts';
 import {sellService} from '../../../services/sell.service.ts';
 import {formStyles} from '../../common/FormStyles.tsx';
+import {EntitySelector, useEntitySelector} from '../../common/EntitySelector.tsx';
 import type {ResponseProductDto} from "../../../dto/product/response-product.dto.ts";
 import type {SellDetailDto} from "../../../dto/sell/sell-detail.dto.ts";
 import {RequestSellDto} from "../../../dto/sell/request-sell.dto.ts";
@@ -27,6 +28,7 @@ export function SellForm() {
     const [sellItems, setSellItems] = useState<SellItem[]>([]);
     const [idComprador, setIdComprador] = useState<string>('');
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const { reloadData } = useEntitySelector();
 
     useEffect(() => {
         loadProducts();
@@ -39,6 +41,11 @@ export function SellForm() {
         } catch (error) {
             console.error('Error cargando productos:', error);
         }
+    };
+
+    // Función para recargar productos después de crear uno nuevo
+    const handleReloadProducts = async () => {
+        await reloadData(() => productService.get().then(data => data.filter(p => p.isActive && p.stock > 0)), setProducts);
     };
 
     const handleAddItem = () => {
@@ -217,29 +224,35 @@ export function SellForm() {
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="md:col-span-1">
-                                        <label htmlFor="product" className={formStyles.label}>
-                                            Producto <span className={formStyles.required}>*</span>
-                                        </label>
-                                        <select
-                                                id="product"
-                                                value={selectedProductId}
-                                                onChange={(e) => {
-                                                    setSelectedProductId(Number(e.target.value));
-                                                    setErrors({});
-                                                }}
-                                                className={formStyles.input}
-                                        >
-                                            <option value={0}>Seleccione un producto</option>
-                                            {products.map((product) => (
-                                                    <option key={product.id} value={product.id}>
-                                                        {product.name} -
-                                                        ${product.price.toFixed(2)} (Stock: {product.stock})
-                                                    </option>
-                                            ))}
-                                        </select>
-                                        {errors.product && (
-                                                <p className="mt-1 text-sm text-red-600">{errors.product}</p>
-                                        )}
+                                        <EntitySelector
+                                            options={products}
+                                            value={selectedProductId}
+                                            onChange={(value: number) => {
+                                                setSelectedProductId(value);
+                                                setErrors({});
+                                            }}
+                                            entityName="producto"
+                                            entityNamePlural="productos"
+                                            createRoute="/product-form"
+                                            label="Producto"
+                                            required
+                                            error={errors.product}
+                                            onReload={handleReloadProducts}
+                                            filterFn={(option: any) => option.isActive && option.stock > 0}
+                                            formatOptionText={(product: any) => 
+                                                `${product.name} - $${product.price.toFixed(2)} (Stock: ${product.stock})`
+                                            }
+                                            showDetailCard={true}
+                                            detailCardContent={(product: any) => (
+                                                <div className="text-sm text-blue-800">
+                                                    <div className="font-medium">{product.name}</div>
+                                                    <div className="flex justify-between mt-1">
+                                                        <span>Precio: ${product.price.toFixed(2)}</span>
+                                                        <span>Stock disponible: {product.stock}</span>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        />
                                     </div>
 
                                     <div className="md:col-span-1">

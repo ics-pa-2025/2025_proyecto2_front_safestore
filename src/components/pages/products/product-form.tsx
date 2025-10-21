@@ -9,12 +9,17 @@ import { productService } from '../../../services/product.service.ts';
 import { brandsService } from '../../../services/brands.service.ts';
 import { lineService } from '../../../services/line.service.ts';
 import { formStyles } from '../../common/FormStyles.tsx';
+import { EntitySelector, useEntitySelector } from '../../common/EntitySelector.tsx';
 
 export function ProductForm() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const productId = searchParams.get('id');
     const isEditing = Boolean(productId);
+    
+    // Detectar si viene de un selector
+    const isFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
+    const returnPath = localStorage.getItem('returnPath');
     const [formData, setFormData] = useState<RequestProductDto>({
         name: '',
         description: '',
@@ -28,6 +33,7 @@ export function ProductForm() {
     const [lines, setLines] = useState<ResponseLineDto[]>([]);
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const { reloadData } = useEntitySelector();
 
     useEffect(() => {
         loadBrands();
@@ -76,6 +82,15 @@ export function ProductForm() {
         } catch (error) {
             console.error('Error cargando líneas:', error);
         }
+    };
+
+    // Funciones para recargar datos después de crear nuevas entidades
+    const handleReloadBrands = async () => {
+        await reloadData(brandsService.get, setBrands);
+    };
+
+    const handleReloadLines = async () => {
+        await reloadData(lineService.get, setLines);
     };
 
     const resetForm = () => {
@@ -158,7 +173,20 @@ export function ProductForm() {
             } else {
                 await productService.create(formData);
             }
-            navigate('/products');
+            
+            // Verificar si viene de un selector
+            const currentIsFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
+            const currentReturnPath = localStorage.getItem('returnPath');
+            
+            if (currentIsFromSelector && currentReturnPath) {
+                // Si viene de un selector, regresar al formulario original
+                localStorage.removeItem('returnFromEntityCreation');
+                localStorage.removeItem('returnPath');
+                navigate(currentReturnPath);
+            } else {
+                // Navegación normal
+                navigate('/products');
+            }
         } catch (error) {
             console.error('Error guardando producto:', error);
             alert(
@@ -170,7 +198,19 @@ export function ProductForm() {
     };
 
     const handleCancel = () => {
-        navigate('/products');
+        // Verificar si viene de un selector
+        const currentIsFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
+        const currentReturnPath = localStorage.getItem('returnPath');
+        
+        if (currentIsFromSelector && currentReturnPath) {
+            // Si viene de un selector, regresar al formulario original sin crear
+            localStorage.removeItem('returnFromEntityCreation');
+            localStorage.removeItem('returnPath');
+            navigate(currentReturnPath);
+        } else {
+            // Navegación normal
+            navigate('/products');
+        }
     };
 
     if (loading && isEditing) {
@@ -233,28 +273,28 @@ export function ProductForm() {
                             </div>
 
                             {/* Marca */}
-                            <div className={formStyles.fieldWrapper}>
-                                <label htmlFor="brandId" className={formStyles.label}>
-                                    Marca <span className={formStyles.required}>*</span>
-                                </label>
-                                <select
-                                    id="brandId"
-                                    name="brandId"
-                                    value={formData.brandId}
-                                    onChange={handleChange}
-                                    className={formStyles.select}
-                                >
-                                    <option value={0}>Seleccionar marca</option>
-                                    {brands.map((brand) => (
-                                        <option key={brand.id} value={brand.id}>
-                                            {brand.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.brandId && (
-                                    <p className={formStyles.errorMessage}>{errors.brandId}</p>
-                                )}
-                            </div>
+                            <EntitySelector
+                                options={brands}
+                                value={formData.brandId}
+                                onChange={(value: number) => {
+                                    setFormData(prev => ({ ...prev, brandId: value }));
+                                    if (errors.brandId) {
+                                        setErrors(prev => {
+                                            const newErrors = { ...prev };
+                                            delete newErrors.brandId;
+                                            return newErrors;
+                                        });
+                                    }
+                                }}
+                                entityName="marca"
+                                entityNamePlural="marcas"
+                                createRoute="/brands-form"
+                                label="Marca"
+                                required
+                                error={errors.brandId}
+                                onReload={handleReloadBrands}
+                                filterFn={(option: any) => option.isActive !== false}
+                            />
 
                             {/* Precio */}
                             <div className={formStyles.fieldWrapper}>
@@ -278,28 +318,28 @@ export function ProductForm() {
                             </div>
 
                             {/* Línea */}
-                            <div className={formStyles.fieldWrapper}>
-                                <label htmlFor="lineId" className={formStyles.label}>
-                                    Línea <span className={formStyles.required}>*</span>
-                                </label>
-                                <select
-                                    id="lineId"
-                                    name="lineId"
-                                    value={formData.lineId}
-                                    onChange={handleChange}
-                                    className={formStyles.select}
-                                >
-                                    <option value={0}>Seleccionar línea</option>
-                                    {lines.map((line) => (
-                                        <option key={line.id} value={line.id}>
-                                            {line.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.lineId && (
-                                    <p className={formStyles.errorMessage}>{errors.lineId}</p>
-                                )}
-                            </div>
+                            <EntitySelector
+                                options={lines}
+                                value={formData.lineId}
+                                onChange={(value: number) => {
+                                    setFormData(prev => ({ ...prev, lineId: value }));
+                                    if (errors.lineId) {
+                                        setErrors(prev => {
+                                            const newErrors = { ...prev };
+                                            delete newErrors.lineId;
+                                            return newErrors;
+                                        });
+                                    }
+                                }}
+                                entityName="línea"
+                                entityNamePlural="líneas"
+                                createRoute="/line-form"
+                                label="Línea"
+                                required
+                                error={errors.lineId}
+                                onReload={handleReloadLines}
+                                filterFn={(option: any) => option.isActive !== false}
+                            />
 
                             {/* Stock */}
                             <div className={formStyles.fieldWrapper}>

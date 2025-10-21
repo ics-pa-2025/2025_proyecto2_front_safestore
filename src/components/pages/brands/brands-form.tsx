@@ -10,6 +10,10 @@ export function BrandsForm() {
     const [searchParams] = useSearchParams();
     const brandId = searchParams.get('id');
     const isEditing = Boolean(brandId);
+    
+    // Detectar si viene de un selector
+    const isFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
+    const returnPath = localStorage.getItem('returnPath');
 
     const [formData, setFormData] = useState({
         name: '',
@@ -78,7 +82,13 @@ export function BrandsForm() {
                 await brandsService.create(brandDto);
             }
 
-            navigate('/brands');
+            if (isFromSelector && returnPath) {
+                // Si viene de un selector, regresar al formulario original
+                navigate(returnPath);
+            } else {
+                // Navegación normal
+                navigate('/brands');
+            }
         } catch (err) {
             setError(
                 isEditing
@@ -91,7 +101,15 @@ export function BrandsForm() {
     };
 
     const handleCancel = () => {
-        navigate('/brands');
+        if (isFromSelector && returnPath) {
+            // Si viene de un selector, regresar al formulario original sin crear
+            localStorage.removeItem('returnFromEntityCreation');
+            localStorage.removeItem('returnPath');
+            navigate(returnPath);
+        } else {
+            // Navegación normal
+            navigate('/brands');
+        }
     };
 
     if (loading && isEditing) {
