@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import type { ResponseProductDto } from '../../../dto/product/response-product.dto.ts';
 import { productService } from '../../../services/product.service.ts';
 import Table, { type TableColumn } from '../../common/Table.tsx';
+import { getImageUrl } from '../../../utils/imageUtils.ts';
 
 export function Product() {
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ export function Product() {
             align: 'center',
             render: (product) => product.imageUrl ? (
                 <img 
-                    src={`http://localhost:3000${product.imageUrl}`} 
+                    src={getImageUrl(product.imageUrl)} 
                     alt={product.name}
                     style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
                 />

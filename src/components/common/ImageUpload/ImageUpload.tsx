@@ -1,10 +1,11 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState, useCallback } from 'react';
 import type { ImageUploadProps, ImageUploadRef } from './types';
 import { ImageUploadService } from './ImageUploadService';
+import { getImageUrl } from '../../../utils/imageUtils';
 
 export const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
     ({ value, onChange, disabled = false, accept = 'image/*', maxSize, className = '' }, ref) => {
-        const [previewUrl, setPreviewUrl] = useState<string | null>(value || null);
+        const [previewUrl, setPreviewUrl] = useState<string | null>(value ? getImageUrl(value) : null);
         const [error, setError] = useState<string | null>(null);
         const [selectedFile, setSelectedFile] = useState<File | null>(null);
         const fileInputRef = useRef<HTMLInputElement>(null);
@@ -12,7 +13,7 @@ export const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
         useImperativeHandle(ref, () => ({
             reset: () => {
                 setSelectedFile(null);
-                setPreviewUrl(value || null);
+                setPreviewUrl(value ? getImageUrl(value) : null);
                 setError(null);
                 if (fileInputRef.current) {
                     fileInputRef.current.value = '';
