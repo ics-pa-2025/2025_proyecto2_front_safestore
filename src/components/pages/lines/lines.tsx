@@ -5,10 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import type { ResponseLineDto } from '../../../dto/line/response-line.dto.ts';
 import { lineService } from '../../../services/line.service.ts';
 import Table, { type TableColumn } from '../../common/Table.tsx';
+import type { ResponseBrandDto } from '../../../dto/brands/response-brand.dto.ts';
+import { brandsService } from '../../../services/brands.service.ts';
 
 export function Lines() {
     const navigate = useNavigate();
     const [lines, setLines] = useState<ResponseLineDto[]>([]);
+    const [brands, setBrands] = useState<ResponseBrandDto[]>([]);
 
     // Definir las columnas de la tabla
     const columns: TableColumn<ResponseLineDto>[] = [
@@ -16,6 +19,15 @@ export function Lines() {
             key: 'name',
             header: 'Name',
             align: 'left'
+        },
+        {
+            key: 'brandId',
+            header: 'Brand',
+            align: 'left',
+            render: (line) => {
+                const brand = brands.find(b => b.id === line.brandId);
+                return brand ? brand.name : '-';
+            }
         },
         {
             key: 'description',
@@ -41,7 +53,17 @@ export function Lines() {
 
     useEffect(() => {
         loadLines();
+        loadBrands();
     }, []);
+
+    const loadBrands = async () => {
+        try {
+            const data = await brandsService.get();
+            setBrands(data);
+        } catch (error) {
+            console.error('Error loading brands:', error);
+        }
+    };
 
     const loadLines = async () => {
         try {

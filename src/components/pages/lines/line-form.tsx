@@ -5,11 +5,14 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import type { RequestLineDto } from '../../../dto/line/request-line.dto.ts';
 import { lineService } from '../../../services/line.service.ts';
 import { formStyles } from '../../common/FormStyles.tsx';
+import type { ResponseBrandDto } from '../../../dto/brands/response-brand.dto.ts';
+import { brandsService } from '../../../services/brands.service.ts';
 
 interface LineFormData {
     name: string;
     description: string;
     isActive: boolean;
+    brandId: number | '';
 }
 
 export function LineForm() {
@@ -26,16 +29,30 @@ export function LineForm() {
         name: '',
         description: '',
         isActive: true,
+        brandId: '',
     });
 
     const [loading, setLoading] = useState(false);
+
+    const [brands, setBrands] = useState<ResponseBrandDto[]>([]);
+
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
         if (isEditing && lineId) {
             loadLine(lineId);
         }
+        loadBrands();
     }, [isEditing, lineId]);
+
+    const loadBrands = async () => {
+        try {
+            const brands = await brandsService.get();
+            setBrands(brands);
+        } catch (error) {
+            console.error('Error loading brands:', error);
+        }
+    };
 
     const loadLine = async (id: string) => {
         try {
@@ -47,6 +64,7 @@ export function LineForm() {
                     name: line.name,
                     description: line.description || '',
                     isActive: line.isActive,
+                    brandId: line.brandId,
                 });
             }
         } catch (error) {
@@ -71,6 +89,10 @@ export function LineForm() {
             newErrors.description = 'Description cannot exceed 500 characters';
         }
 
+        if (!formData.brandId || formData.brandId === '' || typeof formData.brandId !== 'number') {
+            newErrors.brandId = 'Brand is required';
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -79,7 +101,14 @@ export function LineForm() {
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         const { name, value, type } = e.target;
-        const finalValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+        let finalValue: any = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
+        
+        // Convert brandId to number
+        if (name === 'brandId' && value !== '') {
+            finalValue = Number(value);
+        } else if (name === 'brandId' && value === '') {
+            finalValue = '';
+        }
         
         setFormData((prev) => ({
             ...prev,
@@ -108,6 +137,7 @@ export function LineForm() {
                 name: formData.name.trim(),
                 description: formData.description.trim() || undefined,
                 isActive: formData.isActive,
+                brandId: Number(formData.brandId),
             };
 
             if (isEditing && lineId) {
@@ -237,6 +267,30 @@ export function LineForm() {
                                     <option value="true">Active</option>
                                     <option value="false">Inactive</option>
                                 </select>
+                            </div>
+
+                            {/* Brand */}
+                            <div className={formStyles.fieldWrapper}>
+                                <label htmlFor="brandId" className={formStyles.label}>
+                                    Brand <span className={formStyles.required}>*</span>
+                                </label>
+                                <select
+                                    id="brandId"
+                                    name="brandId"
+                                    value={formData.brandId}
+                                    onChange={handleChange}
+                                    className={formStyles.select}
+                                >
+                                    <option value="">Select a brand</option>
+                                    {brands.map((brand) => (
+                                        <option key={brand.id} value={brand.id}>
+                                            {brand.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.brandId && (
+                                    <p className={formStyles.errorMessage}>{errors.brandId}</p>
+                                )}
                             </div>
 
                             {/* Description */}
