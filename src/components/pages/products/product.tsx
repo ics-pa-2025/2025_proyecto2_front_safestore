@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import type { ResponseProductDto } from '../../../dto/product/response-product.dto.ts';
 import { productService } from '../../../services/product.service.ts';
 import Table, { type TableColumn } from '../../common/Table.tsx';
+import { verificarStockProductos } from '../../../helpers/verificarStock.helper.ts';
 import { getImageUrl } from '../../../utils/imageUtils.ts';
 
 export function Product() {
@@ -65,6 +66,9 @@ export function Product() {
         try {
             const data = await productService.get();
             setProducts(data);
+            
+            // Verificar stock después de cargar los productos
+            await verificarStockProductos(data);
         } catch (error) {
             console.error('Error loading products:', error);
         }
