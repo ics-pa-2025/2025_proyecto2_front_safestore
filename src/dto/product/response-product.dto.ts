@@ -1,5 +1,6 @@
 import type { ResponseBrandDto } from '../brands/response-brand.dto.ts';
 import type { ResponseLineDto } from '../line/response-line.dto.ts';
+import type { ResponseSupplierDto } from '../supplier/response-supplier.dto.ts';
 
 export class ResponseProductDto {
     id: number;
@@ -15,6 +16,8 @@ export class ResponseProductDto {
     imageUrl?: string;
     brand: ResponseBrandDto;
     line: ResponseLineDto;
+    suppliers?: ResponseSupplierDto[];
+
 
     constructor(
         id: number,
@@ -29,7 +32,8 @@ export class ResponseProductDto {
         lineId: number,
         brand: ResponseBrandDto,
         line: ResponseLineDto,
-        imageUrl?: string
+        imageUrl?: string,
+        suppliers?: ResponseSupplierDto[]
     ) {
         this.id = id;
         this.name = name;
@@ -44,5 +48,6 @@ export class ResponseProductDto {
         this.imageUrl = imageUrl;
         this.brand = brand;
         this.line = line;
+        this.suppliers = suppliers;
     }
 }

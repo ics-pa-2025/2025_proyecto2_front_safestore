@@ -6,6 +6,7 @@ export class RequestProductDto {
     brandId: number;
     lineId: number;
     imageUrl?: string;
+    suppliers?: number[];
 
     constructor(
         name: string,
@@ -14,7 +15,8 @@ export class RequestProductDto {
         brandId: number,
         lineId: number,
         description?: string,
-        imageUrl?: string
+        imageUrl?: string,
+        suppliers?: number[]
     ) {
         this.name = name;
         this.description = description;
@@ -23,5 +25,6 @@ export class RequestProductDto {
         this.brandId = brandId;
         this.lineId = lineId;
         this.imageUrl = imageUrl;
+        this.suppliers = suppliers;
     }
 }

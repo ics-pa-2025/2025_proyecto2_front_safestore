@@ -11,6 +11,8 @@ import { lineService } from '../../../services/line.service.ts';
 import { formStyles } from '../../common/FormStyles.tsx';
 import { EntitySelector, useEntitySelector } from '../../common/EntitySelector.tsx';
 import { ImageUpload, type ImageUploadRef } from '../../common/ImageUpload';
+import type { ResponseSupplierDto } from '../../../dto/supplier/response-supplier.dto.ts';
+import { supplierService } from '../../../services/supplier.service.ts';
 
 export function ProductForm() {
     const navigate = useNavigate();
@@ -29,10 +31,13 @@ export function ProductForm() {
         brandId: 0,
         lineId: 0,
         imageUrl: '',
+        suppliers: [],
     });
 
     const [brands, setBrands] = useState<ResponseBrandDto[]>([]);
     const [lines, setLines] = useState<ResponseLineDto[]>([]);
+    const [suppliers, setSuppliers] = useState<ResponseSupplierDto[]>([]);
+    const [selectedSuppliers, setSelectedSuppliers] = useState<number[]>([]);
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const { reloadData } = useEntitySelector();
@@ -41,11 +46,26 @@ export function ProductForm() {
     useEffect(() => {
         loadBrands();
         loadLines();
-
+        loadSuppliers();
         if (isEditing && productId) {
             loadProduct(productId);
         }
     }, [isEditing, productId]);
+
+    const loadSuppliers = async () => {
+        try {
+            const data = await supplierService.get();
+            setSuppliers(data);
+        }
+        catch (error) {
+            console.error('Error loading suppliers:', error);
+        }
+    };
+
+    // Function to reload suppliers after creating a new one
+    const handleReloadSuppliers = async () => {
+        await reloadData(supplierService.get, setSuppliers);
+    };
 
     const loadProduct = async (id: string) => {
         try {
@@ -53,6 +73,7 @@ export function ProductForm() {
             const products = await productService.get();
             const product = products.find((p) => p.id === parseInt(id));
             if (product) {
+                const supplierIds = product.suppliers?.map(s => s.id) || [];
                 setFormData({
                     name: product.name,
                     description: product.description || '',
@@ -61,7 +82,9 @@ export function ProductForm() {
                     brandId: product.brandId,
                     lineId: product.lineId,
                     imageUrl: product.imageUrl || '',
+                    suppliers: supplierIds,
                 });
+                setSelectedSuppliers(supplierIds);
             }
         } catch (error) {
             console.error('Error loading product:', error);
@@ -106,7 +129,9 @@ export function ProductForm() {
             brandId: 0,
             lineId: 0,
             imageUrl: '',
+            suppliers: [],
         });
+        setSelectedSuppliers([]);
         setErrors({});
         imageUploadRef.current?.reset();
     };
@@ -176,10 +201,16 @@ export function ProductForm() {
         try {
             const imageFile = imageUploadRef.current?.getFile();
             
+            // Prepare form data with suppliers
+            const productData = {
+                ...formData,
+                suppliers: selectedSuppliers,
+            };
+            
             if (isEditing && productId) {
-                await productService.update(productId, formData, imageFile || undefined);
+                await productService.update(productId, productData, imageFile || undefined);
             } else {
-                await productService.create(formData, imageFile || undefined);
+                await productService.create(productData, imageFile || undefined);
             }
             
             // Verificar si viene de un selector
@@ -301,7 +332,7 @@ export function ProductForm() {
                                 required
                                 error={errors.brandId}
                                 onReload={handleReloadBrands}
-                                filterFn={(option: any) => option.isActive !== false}
+                                filterFn={(option: ResponseBrandDto) => option.isActive !== false}
                             />
 
                             {/* Price */}
@@ -346,7 +377,7 @@ export function ProductForm() {
                                 required
                                 error={errors.lineId}
                                 onReload={handleReloadLines}
-                                filterFn={(option: any) => option.isActive !== false}
+                                filterFn={(option: ResponseLineDto) => option.isActive !== false}
                             />
 
                             {/* Stock */}
@@ -383,6 +414,97 @@ export function ProductForm() {
                                     rows={3}
                                     className={formStyles.textarea}
                                 />
+                            </div>
+
+                            {/* Suppliers Multi-Select */}
+                            <div className={formStyles.fullWidthField}>
+                                <label className={formStyles.label}>
+                                    Suppliers (Optional)
+                                </label>
+                                <div className="space-y-2">
+                                    <EntitySelector
+                                        options={suppliers}
+                                        value={0}
+                                        onChange={(value: number) => {
+                                            // Add supplier if not already selected
+                                            if (value > 0 && !selectedSuppliers.includes(value)) {
+                                                const newSuppliers = [...selectedSuppliers, value];
+                                                setSelectedSuppliers(newSuppliers);
+                                                setFormData(prev => ({ ...prev, suppliers: newSuppliers }));
+                                            }
+                                        }}
+                                        entityName="supplier"
+                                        entityNamePlural="suppliers"
+                                        createRoute="/supplier-form"
+                                        label=""
+                                        required={false}
+                                        onReload={handleReloadSuppliers}
+                                        filterFn={(option: ResponseSupplierDto) => 
+                                            option.isActive && !selectedSuppliers.includes(option.id)
+                                        }
+                                        formatOptionText={(supplier: ResponseSupplierDto) => 
+                                            `${supplier.name} - ${supplier.email}`
+                                        }
+                                        showDetailCard={true}
+                                        detailCardContent={(supplier: ResponseSupplierDto) => (
+                                            <div className="text-sm text-blue-800">
+                                                <div className="font-medium">{supplier.name}</div>
+                                                <div className="mt-1">
+                                                    <div>Email: {supplier.email}</div>
+                                                    <div>Phone: {supplier.phone}</div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    />
+                                    
+                                    {/* Selected Suppliers List */}
+                                    {selectedSuppliers.length > 0 && (
+                                        <div className="mt-3 space-y-2">
+                                            <p className="text-sm font-medium text-slate-700">
+                                                Selected Suppliers ({selectedSuppliers.length}):
+                                            </p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {selectedSuppliers.map((supplierId) => {
+                                                    const supplier = suppliers.find(s => s.id === supplierId);
+                                                    if (!supplier) return null;
+                                                    
+                                                    return (
+                                                        <div
+                                                            key={supplierId}
+                                                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-800 rounded-full text-sm"
+                                                        >
+                                                            <span>{supplier.name}</span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const newSuppliers = selectedSuppliers.filter(id => id !== supplierId);
+                                                                    setSelectedSuppliers(newSuppliers);
+                                                                    setFormData(prev => ({ ...prev, suppliers: newSuppliers }));
+                                                                }}
+                                                                className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+                                                                aria-label={`Remove ${supplier.name}`}
+                                                            >
+                                                                <svg
+                                                                    className="w-4 h-4"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    viewBox="0 0 24 24"
+                                                                >
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth={2}
+                                                                        d="M6 18L18 6M6 6l12 12"
+                                                                    />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Image Upload */}

@@ -20,6 +20,12 @@ class ProductService {
                 formData.append('description', productCreate.description);
             }
             
+            if (productCreate.suppliers && productCreate.suppliers.length > 0) {
+                productCreate.suppliers.forEach((supplierId) => {
+                    formData.append('suppliers[]', supplierId.toString());
+                });
+            }
+            
             if (image) {
                 formData.append('image', image);
             }
@@ -52,6 +58,12 @@ class ProductService {
             
             if (productUpdate.description) {
                 formData.append('description', productUpdate.description);
+            }
+            
+            if (productUpdate.suppliers && productUpdate.suppliers.length > 0) {
+                productUpdate.suppliers.forEach((supplierId) => {
+                    formData.append('suppliers[]', supplierId.toString());
+                });
             }
             
             if (image) {
