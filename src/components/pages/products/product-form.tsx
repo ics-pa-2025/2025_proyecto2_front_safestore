@@ -33,6 +33,7 @@ export function ProductForm() {
 
     const [brands, setBrands] = useState<ResponseBrandDto[]>([]);
     const [lines, setLines] = useState<ResponseLineDto[]>([]);
+    const [allLines, setAllLines] = useState<ResponseLineDto[]>([]); // Store all lines
     const [suppliers, setSuppliers] = useState<ResponseSupplierDto[]>([]);
     const [selectedSuppliers, setSelectedSuppliers] = useState<number[]>([]);
     const [loading, setLoading] = useState(false);
@@ -102,11 +103,29 @@ export function ProductForm() {
     const loadLines = async () => {
         try {
             const data = await lineService.get();
-            setLines(data);
+            setAllLines(data); // Store all lines
+            setLines(data); // Initially show all lines
         } catch (error) {
             console.error('Error loading lines:', error);
         }
     };
+
+    // Filter lines when brand changes
+    useEffect(() => {
+        if (formData.brandId && formData.brandId > 0) {
+            const filteredLines = allLines.filter(line => line.brandId === formData.brandId);
+            setLines(filteredLines);
+            
+            // If current lineId doesn't belong to selected brand, reset it
+            const currentLine = allLines.find(line => line.id === formData.lineId);
+            if (currentLine && currentLine.brandId !== formData.brandId) {
+                setFormData(prev => ({ ...prev, lineId: 0 }));
+            }
+        } else {
+            // If no brand selected, show all lines
+            setLines(allLines);
+        }
+    }, [formData.brandId, allLines]);
 
     // Functions to reload data after creating new entities
     const handleReloadBrands = async () => {
@@ -114,7 +133,15 @@ export function ProductForm() {
     };
 
     const handleReloadLines = async () => {
-        await reloadData(lineService.get, setLines);
+        const data = await lineService.get();
+        setAllLines(data);
+        // Refilter based on current brand
+        if (formData.brandId && formData.brandId > 0) {
+            const filteredLines = data.filter(line => line.brandId === formData.brandId);
+            setLines(filteredLines);
+        } else {
+            setLines(data);
+        }
     };
 
     const validateForm = (): boolean => {
@@ -346,13 +373,32 @@ export function ProductForm() {
                                 options={lines}
                                 value={formData.lineId}
                                 onChange={(value: number) => {
-                                    setFormData(prev => ({ ...prev, lineId: value }));
-                                    if (errors.lineId) {
-                                        setErrors(prev => {
-                                            const newErrors = { ...prev };
-                                            delete newErrors.lineId;
-                                            return newErrors;
-                                        });
+                                    // When line changes, auto-select its brand
+                                    const selectedLine = allLines.find(line => line.id === value);
+                                    if (selectedLine) {
+                                        setFormData(prev => ({ 
+                                            ...prev, 
+                                            lineId: value,
+                                            brandId: selectedLine.brandId 
+                                        }));
+                                        // Clear both errors if they exist
+                                        if (errors.lineId || errors.brandId) {
+                                            setErrors(prev => {
+                                                const newErrors = { ...prev };
+                                                delete newErrors.lineId;
+                                                delete newErrors.brandId;
+                                                return newErrors;
+                                            });
+                                        }
+                                    } else {
+                                        setFormData(prev => ({ ...prev, lineId: value }));
+                                        if (errors.lineId) {
+                                            setErrors(prev => {
+                                                const newErrors = { ...prev };
+                                                delete newErrors.lineId;
+                                                return newErrors;
+                                            });
+                                        }
                                     }
                                 }}
                                 entityName="line"
