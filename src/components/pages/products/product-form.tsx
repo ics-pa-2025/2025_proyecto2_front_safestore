@@ -20,9 +20,6 @@ export function ProductForm() {
     const productId = searchParams.get('id');
     const isEditing = Boolean(productId);
     
-    // Detectar si viene de un selector
-    const isFromSelector = localStorage.getItem('returnFromEntityCreation') === 'true';
-    const returnPath = localStorage.getItem('returnPath');
     const [formData, setFormData] = useState<RequestProductDto>({
         name: '',
         description: '',
@@ -120,22 +117,6 @@ export function ProductForm() {
         await reloadData(lineService.get, setLines);
     };
 
-    const resetForm = () => {
-        setFormData({
-            name: '',
-            description: '',
-            price: 0,
-            stock: 0,
-            brandId: 0,
-            lineId: 0,
-            imageUrl: '',
-            suppliers: [],
-        });
-        setSelectedSuppliers([]);
-        setErrors({});
-        imageUploadRef.current?.reset();
-    };
-
     const validateForm = (): boolean => {
         const newErrors: Record<string, string> = {};
 
@@ -157,6 +138,10 @@ export function ProductForm() {
 
         if (!formData.lineId || formData.lineId === 0) {
             newErrors.lineId = 'Must select a line';
+        }
+
+        if (!selectedSuppliers || selectedSuppliers.length === 0) {
+            newErrors.suppliers = 'Must select at least one supplier';
         }
 
         setErrors(newErrors);
@@ -419,7 +404,7 @@ export function ProductForm() {
                             {/* Suppliers Multi-Select */}
                             <div className={formStyles.fullWidthField}>
                                 <label className={formStyles.label}>
-                                    Suppliers (Optional)
+                                    Suppliers <span className={formStyles.required}>*</span>
                                 </label>
                                 <div className="space-y-2">
                                     <EntitySelector
@@ -431,6 +416,14 @@ export function ProductForm() {
                                                 const newSuppliers = [...selectedSuppliers, value];
                                                 setSelectedSuppliers(newSuppliers);
                                                 setFormData(prev => ({ ...prev, suppliers: newSuppliers }));
+                                                // Clear error when adding a supplier
+                                                if (errors.suppliers) {
+                                                    setErrors(prev => {
+                                                        const newErrors = { ...prev };
+                                                        delete newErrors.suppliers;
+                                                        return newErrors;
+                                                    });
+                                                }
                                             }
                                         }}
                                         entityName="supplier"
@@ -456,6 +449,11 @@ export function ProductForm() {
                                             </div>
                                         )}
                                     />
+                                    
+                                    {/* Error message */}
+                                    {errors.suppliers && (
+                                        <p className={formStyles.errorMessage}>{errors.suppliers}</p>
+                                    )}
                                     
                                     {/* Selected Suppliers List */}
                                     {selectedSuppliers.length > 0 && (
