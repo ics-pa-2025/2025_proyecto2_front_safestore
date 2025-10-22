@@ -12,6 +12,7 @@ export class ResponseProductDto {
     updatedAt: Date;
     brandId: number;
     lineId: number;
+    imageUrl?: string;
     brand: ResponseBrandDto;
     line: ResponseLineDto;
 
@@ -27,7 +28,8 @@ export class ResponseProductDto {
         brandId: number,
         lineId: number,
         brand: ResponseBrandDto,
-        line: ResponseLineDto
+        line: ResponseLineDto,
+        imageUrl?: string
     ) {
         this.id = id;
         this.name = name;
@@ -39,6 +41,7 @@ export class ResponseProductDto {
         this.updatedAt = updatedAt;
         this.brandId = brandId;
         this.lineId = lineId;
+        this.imageUrl = imageUrl;
         this.brand = brand;
         this.line = line;
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import type { RequestProductDto } from '../../../dto/product/request-product.dto.ts';
 import type { ResponseBrandDto } from '../../../dto/brands/response-brand.dto.ts';
@@ -10,6 +10,7 @@ import { brandsService } from '../../../services/brands.service.ts';
 import { lineService } from '../../../services/line.service.ts';
 import { formStyles } from '../../common/FormStyles.tsx';
 import { EntitySelector, useEntitySelector } from '../../common/EntitySelector.tsx';
+import { ImageUpload, type ImageUploadRef } from '../../common/ImageUpload';
 
 export function ProductForm() {
     const navigate = useNavigate();
@@ -27,6 +28,7 @@ export function ProductForm() {
         stock: 0,
         brandId: 0,
         lineId: 0,
+        imageUrl: '',
     });
 
     const [brands, setBrands] = useState<ResponseBrandDto[]>([]);
@@ -34,6 +36,7 @@ export function ProductForm() {
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const { reloadData } = useEntitySelector();
+    const imageUploadRef = useRef<ImageUploadRef>(null);
 
     useEffect(() => {
         loadBrands();
@@ -57,6 +60,7 @@ export function ProductForm() {
                     stock: product.stock,
                     brandId: product.brandId,
                     lineId: product.lineId,
+                    imageUrl: product.imageUrl || '',
                 });
             }
         } catch (error) {
@@ -101,8 +105,10 @@ export function ProductForm() {
             stock: 0,
             brandId: 0,
             lineId: 0,
+            imageUrl: '',
         });
         setErrors({});
+        imageUploadRef.current?.reset();
     };
 
     const validateForm = (): boolean => {
@@ -168,10 +174,12 @@ export function ProductForm() {
 
         setLoading(true);
         try {
+            const imageFile = imageUploadRef.current?.getFile();
+            
             if (isEditing && productId) {
-                await productService.update(productId, formData);
+                await productService.update(productId, formData, imageFile || undefined);
             } else {
-                await productService.create(formData);
+                await productService.create(formData, imageFile || undefined);
             }
             
             // Verificar si viene de un selector
@@ -374,6 +382,21 @@ export function ProductForm() {
                                     placeholder="Optional description"
                                     rows={3}
                                     className={formStyles.textarea}
+                                />
+                            </div>
+
+                            {/* Image Upload */}
+                            <div className={formStyles.fullWidthField}>
+                                <label className={formStyles.label}>
+                                    Product Image
+                                </label>
+                                <ImageUpload
+                                    ref={imageUploadRef}
+                                    value={formData.imageUrl}
+                                    onChange={(imageUrl) => {
+                                        setFormData(prev => ({ ...prev, imageUrl: imageUrl || '' }));
+                                    }}
+                                    disabled={loading}
                                 />
                             </div>
                         </div>

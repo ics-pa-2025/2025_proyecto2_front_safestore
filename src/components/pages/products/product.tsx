@@ -13,6 +13,22 @@ export function Product() {
     // Definir las columnas de la tabla
     const columns: TableColumn<ResponseProductDto>[] = [
         {
+            key: 'imageUrl',
+            header: 'Image',
+            align: 'center',
+            render: (product) => product.imageUrl ? (
+                <img 
+                    src={`http://localhost:3000${product.imageUrl}`} 
+                    alt={product.name}
+                    style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+                />
+            ) : (
+                <div style={{ width: '50px', height: '50px', backgroundColor: '#f3f4f6', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>
+                    📷
+                </div>
+            )
+        },
+        {
             key: 'name',
             header: 'Name',
             align: 'left'

@@ -5,11 +5,31 @@ import type { ResponseProductDto } from '../dto/product/response-product.dto.ts'
 
 class ProductService {
     async create(
-        productCreate: RequestProductDto
+        productCreate: RequestProductDto,
+        image?: File
     ): Promise<ResponseProductDto> {
         try {
+            const formData = new FormData();
+            formData.append('name', productCreate.name);
+            formData.append('price', productCreate.price.toString());
+            formData.append('stock', productCreate.stock.toString());
+            formData.append('brandId', productCreate.brandId.toString());
+            formData.append('lineId', productCreate.lineId.toString());
+            
+            if (productCreate.description) {
+                formData.append('description', productCreate.description);
+            }
+            
+            if (image) {
+                formData.append('image', image);
+            }
+
             const response: AxiosResponse<ResponseProductDto> =
-                await backApi.post('products', productCreate);
+                await backApi.post('products', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
             return response.data;
         } catch (error) {
             console.log(error);
@@ -19,11 +39,31 @@ class ProductService {
 
     async update(
         id: string,
-        productUpdate: RequestProductDto
+        productUpdate: RequestProductDto,
+        image?: File
     ): Promise<ResponseProductDto> {
         try {
+            const formData = new FormData();
+            formData.append('name', productUpdate.name);
+            formData.append('price', productUpdate.price.toString());
+            formData.append('stock', productUpdate.stock.toString());
+            formData.append('brandId', productUpdate.brandId.toString());
+            formData.append('lineId', productUpdate.lineId.toString());
+            
+            if (productUpdate.description) {
+                formData.append('description', productUpdate.description);
+            }
+            
+            if (image) {
+                formData.append('image', image);
+            }
+
             const response: AxiosResponse<ResponseProductDto> =
-                await backApi.patch(`products/${id}`, productUpdate);
+                await backApi.patch(`products/${id}`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
             return response.data;
         } catch (error) {
             console.log(error);
