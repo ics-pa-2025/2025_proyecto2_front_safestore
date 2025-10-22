@@ -9,6 +9,8 @@ import {EntitySelector, useEntitySelector} from '../../common/EntitySelector.tsx
 import type {ResponseProductDto} from "../../../dto/product/response-product.dto.ts";
 import type {SellDetailDto} from "../../../dto/sell/sell-detail.dto.ts";
 import {RequestSellDto} from "../../../dto/sell/request-sell.dto.ts";
+import type { ResponseCustomerDto } from '../../../dto/customer/response-customer.dto.ts';
+import { customerService } from '../../../services/customer.service.ts';
 
 interface SellItem {
     product: ResponseProductDto;
@@ -23,16 +25,32 @@ export function SellForm() {
     const isEditing = Boolean(sellId);
 
     const [products, setProducts] = useState<ResponseProductDto[]>([]);
+    const [customers, setCustomers] = useState<ResponseCustomerDto[]>([]);
     const [selectedProductId, setSelectedProductId] = useState<number>(0);
     const [cantidad, setCantidad] = useState<number>(1);
     const [sellItems, setSellItems] = useState<SellItem[]>([]);
-    const [idComprador, setIdComprador] = useState<string>('');
+    const [selectedCustomerId, setSelectedCustomerId] = useState<number>(0);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const { reloadData } = useEntitySelector();
 
     useEffect(() => {
         loadProducts();
+        loadCustomers();
     }, []);
+
+    const loadCustomers = async () => {
+        try {
+            const data = await customerService.get();
+            setCustomers(data);
+        } catch (error) {
+            console.error('Error loading customers:', error);
+        }
+    };
+
+    // Function to reload customers after creating a new one
+    const handleReloadCustomers = async () => {
+        await reloadData(() => customerService.get(), setCustomers);
+    };
 
     const loadProducts = async () => {
         try {
@@ -155,8 +173,13 @@ export function SellForm() {
                 idProduct: item.product.id
             }));
 
+            // Get customer ID - if a customer is selected, use their id, otherwise use empty string
+            const customerId = selectedCustomerId > 0 
+                ? customers.find(c => c.id === selectedCustomerId)?.id?.toString() || ''
+                : '';
+
             const requestSellDto = new RequestSellDto(
-                    idComprador || '',
+                    customerId,
                     sellDetails
             );
 
@@ -201,19 +224,36 @@ export function SellForm() {
                     <div className={formStyles.formContainer}>
                         <form id="sell-form" onSubmit={handleSubmit} className={formStyles.form}>
                             <div className={formStyles.fieldGrid}>
-                                {/* ID Comprador (Opcional) */}
+                                {/* Customer Selector */}
                                 <div className={formStyles.fullWidthField}>
-                                    <label htmlFor="idComprador" className={formStyles.label}>
-                                        ID Comprador (Opcional)
-                                    </label>
-                                    <input
-                                            type="text"
-                                            id="idComprador"
-                                            name="idComprador"
-                                            value={idComprador}
-                                            onChange={(e) => setIdComprador(e.target.value)}
-                                            placeholder="Ingrese el ID del comprador"
-                                            className={formStyles.input}
+                                    <EntitySelector
+                                        options={customers}
+                                        value={selectedCustomerId}
+                                        onChange={(value: number) => {
+                                            setSelectedCustomerId(value);
+                                            setErrors({});
+                                        }}
+                                        entityName="customer"
+                                        entityNamePlural="customers"
+                                        createRoute="/customer-form"
+                                        label="Customer (Optional)"
+                                        required={false}
+                                        error={errors.customer}
+                                        onReload={handleReloadCustomers}
+                                        formatOptionText={(customer: ResponseCustomerDto) => 
+                                            `${customer.name} ${customer.lastName} - ${customer.id}`
+                                        }
+                                        showDetailCard={true}
+                                        detailCardContent={(customer: ResponseCustomerDto) => (
+                                            <div className="text-sm text-blue-800">
+                                                <div className="font-medium">{customer.name} {customer.lastName}</div>
+                                                <div className="mt-1">
+                                                    <div>ID: {customer.id}</div>
+                                                    {customer.email && <div>Email: {customer.email}</div>}
+                                                    {customer.phone && <div>Phone: {customer.phone}</div>}
+                                                </div>
+                                            </div>
+                                        )}
                                     />
                                 </div>
                             </div>
