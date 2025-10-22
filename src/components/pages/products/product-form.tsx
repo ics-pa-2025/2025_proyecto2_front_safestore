@@ -431,22 +431,6 @@ export function ProductForm() {
                                 )}
                             </div>
 
-                            {/* Description */}
-                            <div className={formStyles.fullWidthField}>
-                                <label htmlFor="description" className={formStyles.label}>
-                                    Descripción
-                                </label>
-                                <textarea
-                                    id="description"
-                                    name="description"
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                    placeholder="Optional description"
-                                    rows={3}
-                                    className={formStyles.textarea}
-                                />
-                            </div>
-
                             {/* Suppliers Multi-Select */}
                             <div className={formStyles.fullWidthField}>
                                 <label className={formStyles.label}>
@@ -548,6 +532,23 @@ export function ProductForm() {
                                             </div>
                                         </div>
                                     )}
+
+                                    {/* Description */}
+                                    <div className={formStyles.fullWidthField}>
+                                        <label htmlFor="description" className={formStyles.label}>
+                                            Descripción
+                                        </label>
+                                        <textarea
+                                            id="description"
+                                            name="description"
+                                            value={formData.description}
+                                            onChange={handleChange}
+                                            placeholder="Optional description"
+                                            rows={3}
+                                            className={formStyles.textarea}
+                                        />
+                                    </div>
+
                                 </div>
                             </div>
 
