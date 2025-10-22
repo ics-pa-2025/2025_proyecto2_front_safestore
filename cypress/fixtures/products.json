@@ -1,0 +1,4 @@
+[
+  { "name": "Alpha Pro", "description": "Producto premium", "price": 1299.99, "stock": 50, "brandId": 2, "lineId": 2 },
+  { "name": "Nova Mini", "description": "Gama media compacta", "price": 499.99, "stock": 100, "brandId": 2, "lineId": 3 }
+]
